@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Workshopy | Balanced HR - Praktické vzdelávanie</title>
+    
+    <!-- Prevencia prebliknutia pre Dark Mode -->
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'bhr-dark': '#111111',
+                        'bhr-card': '#1a1a1a',
+                        'bhr-red': '#E60000',
+                        'bhr-dark-red': '#C80000',
+                        'bhr-gray': '#333333',
+                        'bhr-light-gray': '#54595F'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            scroll-behavior: smooth; 
+        }
+        .bg-bhr-red { background-color: #E60000; }
+        .text-bhr-red { color: #E60000; }
+        .border-bhr-red { border-color: #E60000; }
+        .hover-bg-bhr-dark-red:hover { background-color: #C80000; }
+        
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .dark .glass-nav {
+            background: rgba(17, 17, 17, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(230, 0, 0, 0.15);
+        }
+
+        .modal-active { 
+            overflow: hidden; 
+        }
+
+        .modal-overlay {
+            background: rgba(17, 17, 17, 0.85);
+            backdrop-filter: blur(6px);
+        }
+
+        .bhr-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .bhr-list li::before {
+            content: '●';
+            position: absolute;
+            left: 0;
+            color: #E60000;
+            font-weight: bold;
+        }
+
+        .form-input-sharp { 
+            border-radius: 2px !important; 
+        }
+
+        /* --- APPLE-LIKE SCROLL ANIMÁCIE --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            will-change: opacity, transform;
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Vlastná animácia pre logo v hlavičke */
+        @keyframes pulse-custom {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+        }
+        .animate-pulse-custom {
+            animation: pulse-custom 3s ease-in-out infinite;
+        }
+    </style>
+    
+    <!-- EmailJS knižnica -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body class="text-[#333333] dark:text-gray-200 bg-white dark:bg-bhr-dark transition-colors duration-300 overflow-x-hidden">
+
+    <!-- Navigácia -->
+    <nav class="fixed w-full z-50 glass-nav transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <img src="./logotyp_transparent.png" alt="Logo Balanced HR" class="h-8 md:h-10 w-auto object-contain">
+                <span class="text-lg md:text-xl font-bold tracking-tight dark:text-white uppercase">Balanced <span class="text-bhr-red">HR</span></span>
+            </div>
+            
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center space-x-6 xl:space-x-8 font-medium text-sm xl:text-base">
+                <a href="#filozofia" class="hover:text-bhr-red transition dark:text-gray-300 dark:hover:text-bhr-red">Náš prístup</a>
+                <a href="#internne" class="hover:text-bhr-red transition dark:text-gray-300 dark:hover:text-bhr-red">Interné workshopy</a>
+                <a href="#individualne" class="hover:text-bhr-red transition text-bhr-red">Konzultácia 1:1</a>
+                <a href="#otvorene" class="hover:text-bhr-red transition dark:text-gray-300 dark:hover:text-bhr-red">Otvorené workshopy</a>
+                <a href="#trener" class="hover:text-bhr-red transition dark:text-gray-300 dark:hover:text-bhr-red">Lektor</a>
+                
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400 focus:outline-none" aria-label="Prepnúť tmavý režim">
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+
+                <a href="#kontakt" class="bg-bhr-red text-white px-6 py-2.5 rounded-full hover-bg-bhr-dark-red transition shadow-lg shadow-red-200 dark:shadow-none">Kontakt</a>
+            </div>
+
+            <!-- Mobile Buttons -->
+            <div class="flex items-center gap-2 lg:hidden">
+                <button id="theme-toggle-mobile" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition text-gray-500 dark:text-gray-400 focus:outline-none">
+                    <svg id="theme-toggle-dark-icon-mobile" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                    <svg id="theme-toggle-light-icon-mobile" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                </button>
+                <button id="mobile-menu-btn" class="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Overlay -->
+        <div id="mobile-menu" class="hidden lg:hidden absolute top-20 left-0 w-full bg-white dark:bg-[#1a1a1a] border-b border-gray-100 dark:border-gray-800 shadow-xl flex flex-col px-6 py-8 space-y-5 font-bold transition-all">
+            <a href="#filozofia" class="mobile-link text-gray-700 dark:text-gray-300 hover:text-bhr-red dark:hover:text-bhr-red text-lg">Náš prístup</a>
+            <a href="#internne" class="mobile-link text-gray-700 dark:text-gray-300 hover:text-bhr-red dark:hover:text-bhr-red text-lg">Interné workshopy</a>
+            <a href="#individualne" class="mobile-link text-bhr-red text-lg">Konzultácia 1:1</a>
+            <a href="#otvorene" class="mobile-link text-gray-700 dark:text-gray-300 hover:text-bhr-red dark:hover:text-bhr-red text-lg">Otvorené workshopy</a>
+            <a href="#trener" class="mobile-link text-gray-700 dark:text-gray-300 hover:text-bhr-red dark:hover:text-bhr-red text-lg">Lektor</a>
+            <a href="#kontakt" class="mobile-link block text-center bg-bhr-red text-white px-6 py-4 rounded-2xl w-full text-xl shadow-lg shadow-red-100 dark:shadow-none hover-bg-bhr-dark-red">Kontakt</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-16 md:pt-48 md:pb-32 px-4 md:px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 md:gap-16">
+            <div class="w-full md:w-1/2 z-10 text-center md:text-left reveal">
+                <span class="inline-block px-4 py-1.5 bg-red-50 dark:bg-red-900/20 text-bhr-red rounded-full text-xs font-bold uppercase tracking-widest mb-6">AI Strategy for Business</span>
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-[1.1] mb-6 dark:text-white">
+                    Zmeňte <span class="text-bhr-red">výkonnosť</span> vášho tímu cez AI
+                </h1>
+                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-lg mx-auto md:mx-0">
+                    Praktické workshopy zamerané na okamžité výsledky v pondelok ráno. Ukážeme vám, ako AI v praxi šetrí hodiny administratívy a zvyšuje maržu.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="#internne" class="w-full sm:w-auto bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-8 py-4 rounded-2xl text-center font-bold hover:bg-black dark:hover:bg-white transition text-lg shadow-xl shadow-gray-200 dark:shadow-none">Workshop pre firmu</a>
+                    <a href="#individualne" class="w-full sm:w-auto bg-white dark:bg-transparent border-2 border-gray-100 dark:border-gray-700 px-8 py-4 rounded-2xl text-center font-bold hover:border-bhr-red dark:hover:border-bhr-red transition text-lg text-bhr-red">Konzultácia 1:1</a>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 relative mt-8 md:mt-0 reveal" style="transition-delay: 200ms;">
+                <!-- Pulzujúce Logo B -->
+                <div class="relative w-[75%] sm:w-[60%] md:w-[85%] mx-auto aspect-square bg-gray-50 dark:bg-bhr-card rounded-[50px] md:rounded-[80px] flex items-center justify-center overflow-hidden border border-gray-100 dark:border-white/5 shadow-inner dark:shadow-none transition-colors duration-300">
+                    <img src="./Logo_B_Red.png" alt="Balanced HR Logo" class="w-full h-full relative z-10 animate-pulse-custom object-cover">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filozofia / Náš prístup -->
+    <section id="filozofia" class="py-20 md:py-32 bg-[#111111] dark:bg-[#0a0a0a] text-white overflow-hidden transition-colors duration-300 text-left">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="flex flex-col lg:flex-row gap-16 items-start">
+                <div class="w-full lg:w-3/5 reveal">
+                    <h2 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-12 md:mb-20 leading-tight">
+                        Neúčime AI technológiu.<br>
+                        <span class="text-bhr-red uppercase italic">Učíme prácu s AI.</span>
+                    </h2>
+
+                    <div class="space-y-10 md:space-y-16">
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-bhr-red/10 rounded-2xl flex items-center justify-center border border-bhr-red/20">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xl md:text-2xl font-bold mb-2">Dokumenty, nie kód</h4>
+                                <p class="text-gray-400 text-base md:text-lg leading-relaxed">Nezaujíma nás programovanie. Zameriavame sa na reporty, tabuľky, zápisy a prípravu rozhodnutí – veci, ktoré vás živia.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-bhr-red/10 rounded-2xl flex items-center justify-center border border-bhr-red/20">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xl md:text-2xl font-bold mb-2">Rozhoduje vždy človek</h4>
+                                <p class="text-gray-400 text-base md:text-lg leading-relaxed">AI u nás nikdy nerozhoduje samostatne. Každý proces nastavujeme s jasnou hranicou ľudskej zodpovednosti.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6">
+                            <div class="flex-shrink-0 w-12 h-12 md:w-16 md:h-16 bg-bhr-red/10 rounded-2xl flex items-center justify-center border border-bhr-red/20">
+                                <svg class="w-6 h-6 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xl md:text-2xl font-bold mb-2">Vytvárame poriadok</h4>
+                                <p class="text-gray-400 text-base md:text-lg leading-relaxed">Cieľom nie je "viac AI". Cieľom je menej chaosu, menej rutiny a viac kontroly nad vaším časom a procesmi.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-2/5 reveal" style="transition-delay: 200ms;">
+                    <div class="bg-[#1a1a1a] dark:bg-[#151515] p-8 sm:p-12 rounded-[40px] border border-white/5 shadow-2xl transition-colors duration-300">
+                        <h3 class="text-2xl md:text-3xl font-bold mb-8">Pre koho sú kurzy?</h3>
+                        <p class="text-gray-400 mb-8 text-lg">Naše workshopy sú navrhnuté pre tímy, ktoré:</p>
+                        
+                        <ul class="space-y-6 mb-12 text-lg">
+                            <li class="flex items-start gap-3">
+                                <span class="text-bhr-red mt-1 font-bold">✔</span>
+                                <span class="text-gray-200">denne pracujú s textom a dokumentmi</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-bhr-red mt-1 font-bold">✔</span>
+                                <span class="text-gray-200">spracúvajú procesy, checklisty a tabuľky</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-bhr-red mt-1 font-bold">✔</span>
+                                <span class="text-gray-200">pripravujú podklady pre rozhodovanie</span>
+                            </li>
+                        </ul>
+
+                        <div class="bg-black/40 p-6 rounded-2xl border border-white/5">
+                            <span class="text-xs font-bold text-bhr-red uppercase tracking-widest block mb-4">Najčastejší klienti</span>
+                            <div class="flex flex-wrap gap-2 text-sm text-gray-400 font-medium leading-relaxed">
+                                HR, Kvalita, Administratíva, Logistika, Backoffice, Manažment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interné Workshopy -->
+    <section id="internne" class="py-16 md:py-24 bg-gray-50/40 dark:bg-black/20 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-10 md:mb-16 reveal">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 dark:text-white">Interné firemné workshopy</h2>
+                <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 md:gap-8 mt-6 text-sm md:text-base">
+                    <div class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-bhr-card rounded-full shadow-sm border border-gray-100 dark:border-white/5 transition-colors duration-300">
+                        <svg class="w-5 h-5 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="font-bold dark:text-gray-200">Trvanie: 5 hodín</span>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-bhr-card rounded-full shadow-sm border border-gray-100 dark:border-white/5 transition-colors duration-300">
+                        <svg class="w-5 h-5 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <span class="font-bold dark:text-gray-200">Cena: individuálna ponuka</span>
+                    </div>
+                    <div class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-bhr-card rounded-full shadow-sm border border-gray-100 dark:border-white/5 transition-colors duration-300">
+                        <svg class="w-5 h-5 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="font-bold dark:text-gray-200">Kapacita: max. 10 osôb</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 stagger-grid-internal">
+                <!-- Karta 1 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">Krok do sveta AI</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Univerzálny štart. Pochopenie princípov a bezpečnosti pre celú firmu.</p>
+                    <button onclick="openModal('krok', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+
+                <!-- Karta 2 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">AI pre biznis</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Strategický workshop pre majiteľov a CEO zameraný na efektivitu a maržu.</p>
+                    <button onclick="openModal('biznis', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+
+                <!-- Karta 3 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">AI pre HR</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Optimalizácia náboru, komunikácie a onboardingu s využitím AI expertízy.</p>
+                    <button onclick="openModal('hr', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+
+                <!-- Karta 4 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.209.369l-1.354 2.032a11.042 11.042 0 01-4.673-4.673l2.032-1.354a1 1 0 00.369-1.209L7.228 3.684A1 1 0 006.28 3H5z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">AI pre Sales</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Akcelerácia predaja, inteligentný prospecting a automatizácia ponúk.</p>
+                    <button onclick="openModal('sales', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+
+                <!-- Karta 5 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">Copilot (MS 365)</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Ako premeniť balík Office na vášho inteligentného asistenta.</p>
+                    <button onclick="openModal('copilot', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+
+                <!-- Karta 6 -->
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] border border-gray-100 dark:border-white/5 card-hover transition-all duration-300 flex flex-col h-full shadow-sm dark:shadow-none">
+                    <div class="w-14 h-14 md:w-16 md:h-16 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-center justify-center mb-6 md:mb-8">
+                        <svg class="w-7 h-7 md:w-8 md:h-8 text-bhr-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl md:text-2xl font-bold mb-3 md:mb-4 dark:text-white">AI kurz na mieru</h3>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 flex-grow">Flexibilný modul prispôsobený pre backoffice, financie či <strong>kvalitu</strong>.</p>
+                    <button onclick="openModal('admin', true)" class="text-bhr-red font-bold flex items-center group w-max">
+                        Zistiť viac <span class="ml-2 group-hover:translate-x-1 transition">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Individuálna Konzultácia -->
+    <section id="individualne" class="py-16 md:py-24 px-4 md:px-6 bg-white dark:bg-bhr-dark overflow-hidden border-t border-gray-50 dark:border-white/5 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto reveal">
+            <div class="bg-gray-50 dark:bg-bhr-card rounded-[30px] md:rounded-[50px] p-6 sm:p-12 md:p-16 border border-gray-100 dark:border-white/5 relative shadow-inner dark:shadow-none transition-colors duration-300">
+                <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
+                    <div class="w-full lg:w-2/3 text-center md:text-left">
+                        <span class="inline-block px-4 py-1.5 bg-red-50 dark:bg-red-900/20 text-bhr-red rounded-full text-xs font-bold uppercase tracking-widest mb-4 md:mb-6">Expert 1:1</span>
+                        <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 md:mb-6 italic text-[#333333] dark:text-white">Individuálna AI konzultácia</h2>
+                        <p class="text-base md:text-xl text-gray-600 dark:text-gray-400 mb-6 md:mb-8 leading-relaxed text-left">
+                            Potrebujete riešiť špecifické výzvy vášho pracovného dňa? 1:1 stretnutie je zamerané výhradne na <strong>vaše vlastné use cases</strong> a okamžité nasadenie AI do vašej osobnej produktivity.
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-8 md:mb-10 text-left text-sm md:text-base">
+                            <div class="flex items-center gap-3">
+                                <span class="text-bhr-red font-bold text-lg md:text-xl">✔</span>
+                                <span class="font-medium text-[#333333] dark:text-gray-200">Audit vašich procesov</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-bhr-red font-bold text-lg md:text-xl">✔</span>
+                                <span class="font-medium text-[#333333] dark:text-gray-200">Vlastné use cases na mieru</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-bhr-red font-bold text-lg md:text-xl">✔</span>
+                                <span class="font-medium text-[#333333] dark:text-gray-200">Príprava Custom GPTs</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="text-bhr-red font-bold text-lg md:text-xl">✔</span>
+                                <span class="font-medium text-[#333333] dark:text-gray-200">Individuálny prístup</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col sm:flex-row flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6">
+                            <div class="flex flex-col items-center md:items-start">
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-3xl font-bold text-bhr-red">250 €</span>
+                                    <span class="text-sm font-bold text-gray-500 dark:text-gray-400">bez DPH</span>
+                                </div>
+                                <span class="text-[10px] md:text-xs text-gray-400 dark:text-gray-500 font-bold uppercase tracking-wider">/ hodina konzultácie</span>
+                            </div>
+                            <button onclick="openModal('konzultacia', true)" class="w-full sm:w-auto bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-8 md:px-10 py-3 md:py-4 rounded-2xl font-bold hover:bg-black dark:hover:bg-white transition shadow-lg dark:shadow-none">Dozvedieť sa viac</button>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/3 flex justify-center mt-6 lg:mt-0">
+                        <div class="w-56 h-56 md:w-80 md:h-80 bg-white dark:bg-bhr-dark rounded-full flex items-center justify-center border border-gray-100 dark:border-white/5 shadow-xl dark:shadow-none relative text-center transition-colors duration-300">
+                            <div class="flex flex-col items-center">
+                                <svg class="w-16 h-16 md:w-20 md:h-20 text-bhr-red opacity-80 mb-3 md:mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                <span class="text-[10px] md:text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest leading-tight">Vlastné<br>zadania</span>
+                            </div>
+                            <div class="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 bg-bhr-red text-white p-3 md:p-4 rounded-3xl font-bold text-xs md:text-sm shadow-xl dark:shadow-none">
+                                100% Na mieru
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Otvorené Workshopy -->
+    <section id="otvorene" class="py-16 md:py-24 px-4 md:px-6 bg-gray-50/20 dark:bg-[#0a0a0a] transition-colors duration-300">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 md:gap-6 reveal">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-6 text-[#333333] dark:text-white">Otvorené kurzy</h2>
+                    <p class="text-sm md:text-lg text-gray-500 dark:text-gray-400">Skupinové vzdelávanie pre váš profesionálny rast.</p>
+                </div>
+                <div class="text-left md:text-right mt-2 md:mt-0">
+                    <span class="text-bhr-red font-bold text-2xl md:text-3xl">300 €</span>
+                    <span class="text-gray-400 dark:text-gray-500 block text-xs md:text-sm font-bold uppercase tracking-wider">bez DPH / účastník</span>
+                </div>
+            </div>
+
+            <!-- Sem sa vložia kurzy automaticky cez JavaScript -->
+            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 stagger-grid-open">
+                <!-- Javascript fills this with 5 courses -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Referencie / Logá klientov -->
+    <section id="referencie" class="py-16 md:py-32 bg-white dark:bg-bhr-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="text-center mb-12 md:mb-20 reveal">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-[#333333] dark:text-white">Dôverujú nám lídri na trhu</h2>
+            </div>
+            
+            <!-- Flex wrap kontajner pre 13 lôg - centrovanie zaručí, že nepárny počet vyzerá dobre -->
+            <div id="logos-container" class="flex flex-wrap justify-center items-center gap-8 md:gap-12 mb-16 md:mb-32 px-4 stagger-grid-logos">
+                <!-- LOGO 1 až 13 (Zmeň príponu na .jpg alebo .webp, ak to tvoj súbor vyžaduje) -->
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo1.png" alt="Logo klienta 1" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo2.jpg" alt="Logo klienta 2" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo3.png" alt="Logo klienta 3" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo4.jpg" alt="Logo klienta 4" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo5.png" alt="Logo klienta 5" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo6.jpg" alt="Logo klienta 6" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo7.png" alt="Logo klienta 7" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo8.png" alt="Logo klienta 8" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo9.png" alt="Logo klienta 9" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo10.png" alt="Logo klienta 10" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo11.png" alt="Logo klienta 11" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo12.png" alt="Logo klienta 12" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+                <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
+                    <img src="./Logo13.png" alt="Logo klienta 13" class="max-h-12 md:max-h-16 object-contain">
+                </div>
+            </div>
+
+            <!-- Citáty -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 text-left stagger-grid-quotes">
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 relative transition-colors duration-300">
+                    <div class="text-5xl md:text-6xl text-bhr-red opacity-10 absolute top-4 left-4 md:top-6 md:left-6">“</div>
+                    <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-6 md:mb-8 relative z-10 italic">"Workshop nám uvoľnil kapacitu, ktorú sme predtým pálili na administratíve. Rastislav hovoril naším jazykom."</p>
+                    <div class="font-bold text-[#333333] dark:text-white text-sm md:text-base">Peter M., Majiteľ výrobnej firmy</div>
+                </div>
+                <div class="reveal-item bg-[#333333] dark:bg-[#222] p-8 md:p-10 rounded-[30px] md:rounded-[40px] shadow-xl dark:shadow-none relative text-white transition-colors duration-300">
+                    <div class="text-5xl md:text-6xl text-white opacity-10 absolute top-4 left-4 md:top-6 md:left-6">“</div>
+                    <p class="text-sm md:text-lg text-gray-100 dark:text-gray-300 mb-6 md:mb-8 relative z-10 italic">"Implementácia AI do recruitmentu nám ušetrila 2 dni mesačne. Prístup je ľudský a biznisovo orientovaný."</p>
+                    <div class="font-bold text-white text-sm md:text-base">Zuzana K., HR Manažérka</div>
+                </div>
+                <div class="reveal-item bg-white dark:bg-bhr-card p-8 md:p-10 rounded-[30px] md:rounded-[40px] shadow-sm dark:shadow-none border border-gray-100 dark:border-white/5 relative transition-colors duration-300">
+                    <div class="text-5xl md:text-6xl text-bhr-red opacity-10 absolute top-4 left-4 md:top-6 md:left-6">“</div>
+                    <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-6 md:mb-8 relative z-10 italic">"Konverzia predaja stúpla o 15 % po automatizácii personalizovaných ponúk. AI je u nás teraz kľúčový nástroj."</p>
+                    <div class="font-bold text-[#333333] dark:text-white text-sm md:text-base">Marek L., Obchodný riaditeľ</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Lektor -->
+    <section id="trener" class="py-16 md:py-32 bg-[#333333] dark:bg-[#1a1a1a] text-white overflow-hidden relative border-t border-white/5 text-left transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 relative z-10">
+            <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+                <div class="w-full max-w-[300px] md:max-w-none md:w-1/3 mx-auto reveal">
+                    <div class="relative group">
+                        <div class="absolute inset-0 bg-bhr-red rounded-[30px] md:rounded-[40px] translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 group-hover:translate-x-2 group-hover:translate-y-2 transition duration-300"></div>
+                        <div class="w-full aspect-[4/5] bg-gray-600 rounded-[30px] md:rounded-[40px] relative z-10 overflow-hidden border-2 border-white/10 shadow-2xl">
+                            <img src="./Portret_RK.png" alt="Rastislav Kozlík" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition duration-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:w-2/3 mt-8 md:mt-0 text-center md:text-left reveal" style="transition-delay: 200ms;">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-3 md:mb-4">Lektor: <span class="text-bhr-red">Rastislav Kozlík</span></h2>
+                    <p class="text-lg md:text-xl text-gray-400 font-semibold mb-6 md:mb-8">Expert na AI a biznis transformáciu v Balanced HR</p>
+                    <div class="space-y-4 md:space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-left">
+                        <p>Pomáham majiteľom firiem a manažérom demystifikovať umelú inteligenciu. Moje školenia nie sú o teórii, ale o <strong>reálnych výsledkoch hneď na druhý deň</strong>.</p>
+                        <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 pt-2 md:pt-4 text-sm md:text-base">
+                            <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> Expert na AI v HR</li>
+                            <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> Strategický konzultant pre MSP</li>
+                            <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> 15+ rokov v biznis procesoch</li>
+                            <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> 200+ odškolených hodín</li>
+                        </ul>
+                    </div>
+                    <div class="flex justify-center md:justify-start gap-4 mt-8">
+                        <a href="https://www.linkedin.com/in/rastislavkozlik/" target="_blank" class="inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 text-white hover:bg-bhr-red transition shadow-lg">
+                            <svg class="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontakt -->
+    <section id="kontakt" class="py-16 md:py-24 px-4 md:px-6 bg-white dark:bg-bhr-dark transition-colors duration-300">
+        <div class="max-w-5xl mx-auto text-center reveal">
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 italic text-[#333333] dark:text-white">Pripravení na AI transformáciu?</h2>
+            <p class="text-base md:text-xl text-gray-500 dark:text-gray-400 mb-8 md:mb-12">Dohodnime si hovor a zistíme, kde vo vašej firme pálite najviac času.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
+                <a href="mailto:info@balancedhr.sk" class="bg-bhr-red text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover-bg-bhr-dark-red transition shadow-xl shadow-red-100 dark:shadow-none w-full sm:w-auto">info@balancedhr.sk</a>
+                <a href="tel:+421948705669" class="bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover:bg-black dark:hover:bg-white transition shadow-xl shadow-gray-200 dark:shadow-none w-full sm:w-auto">+421 948 705 669</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODAL SYSTEM PRE DETAILY KURZOV (PRE OBA TYPY) -->
+    <div id="workshopModal" class="fixed inset-0 z-[60] hidden flex items-center justify-center px-4 md:px-6">
+        <div class="absolute inset-0 modal-overlay" onclick="closeModal()"></div>
+        <div class="bg-white dark:bg-bhr-card rounded-[30px] md:rounded-[40px] max-w-3xl w-full relative z-10 max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 dark:border-white/5 transition-colors duration-300">
+            <button onclick="closeModal()" class="absolute top-6 right-6 md:top-8 md:right-8 text-gray-400 dark:text-gray-500 hover:text-bhr-red transition bg-white/80 dark:bg-black/50 rounded-full p-1 md:p-0 z-20">
+                <svg class="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <div id="modalBody" class="p-6 sm:p-8 md:p-12 text-left mt-4 md:mt-0">
+                <!-- Dynamický obsah vložený cez JS -->
+            </div>
+            
+            <!-- DYNAMICKÝ FOOTER PRE MODAL (Menia sa tlačidlá podľa toho či ide o interný alebo otvorený kurz) -->
+            <div id="modalFooter" class="p-6 md:p-8 border-t border-gray-100 dark:border-white/5 flex flex-col md:flex-row gap-4 bg-gray-50 dark:bg-[#222] rounded-b-[30px] md:rounded-b-[40px] transition-colors duration-300 w-full items-center justify-between">
+                <!-- Obsah sa generuje z JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- OBJEDNÁVKOVÝ FORMULÁR OVERLAY -->
+    <div id="orderFormOverlay" class="fixed inset-0 z-[70] hidden bg-bhr-red overflow-y-auto">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-12 text-white relative">
+            <button onclick="closeOrderForm()" class="absolute top-4 right-4 md:top-8 md:right-0 text-white hover:text-gray-200 opacity-80 hover:opacity-100 transition z-10 p-2">
+                <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <h2 class="text-2xl md:text-4xl font-bold mb-2 pt-6 md:pt-0">Objednávka školenia</h2>
+            <h3 id="orderFormCourse" class="text-xl md:text-2xl mb-1 font-semibold text-white"></h3>
+            <p id="orderFormDate" class="mb-6 md:mb-8 opacity-90 font-medium text-sm md:text-base"></p>
+
+            <p class="mb-6 md:mb-8 text-base md:text-lg">Pre viac informácií nás neváhajte kontaktovať.</p>
+
+            <form id="orderForm" class="space-y-4 md:space-y-5 text-left">
+                <input type="hidden" name="Kurz" id="hiddenCourse">
+                <input type="hidden" name="Termin" id="hiddenDate">
+
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Meno (povinné)</label>
+                    <input type="text" name="Meno" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Spoločnosť (povinné)</label>
+                    <input type="text" name="Spolocnost" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Váš email (povinné)</label>
+                    <input type="email" name="Email" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Váš telefón</label>
+                    <input type="tel" name="Telefon" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Chcem prihlásiť nasledovných kolegov</label>
+                    <input type="text" name="Kolegovia" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Vaša správa</label>
+                    <textarea name="Sprava" rows="3" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Odkiaľ ste sa dozvedeli o workshope?</label>
+                    <div class="relative">
+                        <select name="Zdroj" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black appearance-none cursor-pointer">
+                            <option value="">—Vyberte možnosť—</option>
+                            <option value="LinkedIn">LinkedIn</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Vyhľadávanie Google">Vyhľadávanie Google</option>
+                            <option value="Od známeho">Od známeho / Odporúčanie</option>
+                            <option value="Iné">Iné</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-4 md:pt-6">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <input type="checkbox" required name="Suhlas_GDPR" value="Ano" class="mt-1 w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-black shrink-0">
+                        <span class="text-[13px] md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím so spracovaním mojich osobných údajov. (1)</span>
+                    </label>
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <input type="checkbox" required name="Suhlas_FotoVideo" value="Ano" class="mt-1 w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-black shrink-0">
+                        <span class="text-[13px] md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím so spracovaním, upravením, použitím a reprodukovaním audio-vizuálneho záznamu. (2)</span>
+                    </label>
+                </div>
+
+                <!-- Skrytý box pre zobrazenie výsledku odoslania -->
+                <div id="formMessage" class="hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2"></div>
+
+                <div class="pt-4 md:pt-6">
+                    <button type="submit" id="submitBtn" class="w-full md:w-auto border-2 border-white text-white px-8 py-3 md:py-4 font-bold text-lg md:text-base hover:bg-white hover:text-bhr-red transition">ODOŠLI</button>
+                </div>
+            </form>
+
+            <!-- Právna doložka -->
+            <div class="mt-12 md:mt-16 text-[10px] md:text-[11px] leading-relaxed opacity-70 space-y-3 md:space-y-4 text-justify max-w-3xl border-t border-white/20 pt-6 md:pt-8">
+                <p>1) Súhlasím so spracovaním mojich osobných údajov spoločnosťou BALANCED HR, s. r. o., so sídlom Mlynské nivy 48, 821 09 Bratislava, v rozsahu kontaktných údajov na účel zaradenia do elektronickej databázy záujemcov o vzdelávanie, v súlade s Nariadením Európskeho parlamentu a Rady EÚ 2016/679 o ochrane fyzických osôb pri spracúvaní osobných údajov a o voľnom pohybe takýchto údajov (GDPR) a zákon č. 18/2018 Z. z. o ochrane osobných údajov, ktoré nadobudlo účinnosť od 25. 5. 2018. Vyhlasujem, že všetky údaje v poskytnutom rozsahu sú presné, správne a aktuálne.</p>
+                <p>2) Týmto vyjadrujem súhlas so spracovaním, upravením, použitím a reprodukovaním audio-vizuálneho záznamu, ktorý bude vytvorený počas školenia za účelom prezentácie organizácie, preukázania kvality školení na webovej stránke, sociálnych sieťach a iných propagačných materiáloch spoločnosti BALANCED HR, s.r.o. Tento súhlas udeľujem bezplatne.</p>
+                <p>Udelené súhlasy sú udelené na dobu 3 roky alebo do doručenia písomného odvolania tohto súhlasu akýmkoľvek spôsobom. Súhlasy máte právo kedykoľvek odvolať zaslaním e-mailu na adresu <a href="mailto:info@balanced-hr.com" class="underline">info@balanced-hr.com</a> alebo zaslaním písomného oznámenia na adresu: Mlynské nivy 48, 821 09 Bratislava.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pätka -->
+    <footer class="py-10 md:py-12 border-t border-gray-100 dark:border-white/5 bg-white dark:bg-bhr-dark transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-sm text-center md:text-left">
+            <div class="flex items-center space-x-2">
+                <img src="./logotyp_transparent.png" alt="Logo Balanced HR" class="h-6 md:h-8 w-auto object-contain">
+                <span class="font-bold tracking-tight dark:text-white uppercase">Balanced <span class="text-bhr-red">HR</span></span>
+            </div>
+            <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500">© 2024 Balanced HR s.r.o. Všetky ceny sú uvádzané bez DPH.</p>
+            <div class="flex justify-center space-x-6 font-bold">
+                <a href="https://www.linkedin.com/company/balanced-hr-s-r-o-/" target="_blank" class="hover:text-bhr-red dark:text-gray-300 dark:hover:text-bhr-red transition">LinkedIn</a>
+                <a href="#" class="hover:text-bhr-red dark:text-gray-300 dark:hover:text-bhr-red transition">GDPR</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- Intersect Observer pre Apple-like Scroll Animácie ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // Animácia sa spustí, keď je 15% elementu viditeľných
+            };
+
+            const scrollObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Animujeme len raz pri scrollovaní dole
+                    }
+                });
+            }, observerOptions);
+
+            // Samostatné elementy
+            document.querySelectorAll('.reveal').forEach(el => scrollObserver.observe(el));
+
+            // Helper na vytvorenie "Stagger" (kaskádového) efektu pre skupiny prvkov
+            const setupStagger = (containerClass, itemSelector, delayMs = 150) => {
+                const containers = document.querySelectorAll(containerClass);
+                containers.forEach(container => {
+                    const items = container.querySelectorAll(itemSelector);
+                    items.forEach((item, index) => {
+                        item.style.transitionDelay = `${index * delayMs}ms`;
+                        scrollObserver.observe(item);
+                    });
+                });
+            };
+
+            // Aplikovanie stagger efektu na gridy
+            setupStagger('.stagger-grid-internal', '.reveal-item', 150); // Karty interné
+            setupStagger('.stagger-grid-open', '.reveal-item', 150); // Karty otvorené
+            setupStagger('.stagger-grid-logos', '.reveal-item', 50); // Logá (rýchlejší stagger)
+            setupStagger('.stagger-grid-quotes', '.reveal-item', 150); // Citáty
+        });
+
+        // --- Mobilné menu a Dark Mode ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+        const themeToggleBtnMobile = document.getElementById('theme-toggle-mobile');
+        const themeToggleDarkIconMobile = document.getElementById('theme-toggle-dark-icon-mobile');
+        const themeToggleLightIconMobile = document.getElementById('theme-toggle-light-icon-mobile');
+
+        function setIconsBasedOnTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleLightIcon.classList.remove('hidden');
+                themeToggleDarkIcon.classList.add('hidden');
+                themeToggleLightIconMobile.classList.remove('hidden');
+                themeToggleDarkIconMobile.classList.add('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+                themeToggleDarkIconMobile.classList.remove('hidden');
+                themeToggleLightIconMobile.classList.add('hidden');
+            }
+        }
+        setIconsBasedOnTheme();
+
+        function toggleTheme() {
+            if (localStorage.getItem('color-theme')) {
+                if (localStorage.getItem('color-theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('color-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('color-theme', 'dark');
+                }
+            }
+            setIconsBasedOnTheme();
+        }
+
+        themeToggleBtn.addEventListener('click', toggleTheme);
+        themeToggleBtnMobile.addEventListener('click', toggleTheme);
+
+        // --- Dáta pre kurzy ---
+        const workshopData = {
+            konzultacia: {
+                title: 'Individuálna AI konzultácia',
+                subtitle: 'Riešenie 1:1 na mieru vašim potrebám',
+                gains: [
+                    'Audit vášho pracovného dňa – identifikácia priestoru pre AI',
+                    'Riešenie vašich konkrétnych "Use Cases" z praxe',
+                    'Spoločné nastavenie GPT asistentov (Custom GPTs) na mieru',
+                    'Výber a otestovanie nástrojov pre vašu konkrétnu pozíciu',
+                    'Osobný prístup a možnosť ísť do hĺbky v špecifických témach'
+                ],
+                structure: [
+                    { time: 'Trvanie', label: '60 - 90 minút intenzívnej konzultácie s lektorom' },
+                    { time: 'Formát', label: 'Online (Teams/Zoom) alebo osobne (podľa dohody)' },
+                    { time: 'Príprava', label: 'Analýza vašich zaslaných úloh vopred' }
+                ],
+                for: 'Jednotlivci, manažéri a špecialisti, ktorí potrebujú riešenie na mieru a nechcú čakať na skupinový kurz.',
+                dates: []
+            },
+            krok: {
+                title: 'Krok do sveta AI',
+                subtitle: 'Základný stavebný kameň pre každú modernú firmu',
+                gains: [
+                    'Pochopenie princípov fungovania Generatívnej AI',
+                    'Schopnosť tvoriť presné a efektívne prompty',
+                    'Prehľad o bezpečnosti firemných dát',
+                    'Okamžité využitie AI v dennej administratíve'
+                ],
+                structure: [
+                    { time: '09:00 - 10:00', label: 'Demystifikácia AI a jej potenciál v biznise' },
+                    { time: '10:00 - 11:30', label: 'Prompt Engineering: Majstrovstvo v zadávaní úloh' },
+                    { time: '11:45 - 13:00', label: 'Praktické nástroje a bezpečnosť dát' },
+                    { time: '13:00 - 14:00', label: 'Live testovanie a Q&A' }
+                ],
+                for: 'Celý tím, od administratívy po top management.',
+                dates: ['4. jún 2026 (štvrtok), Trenčín (8:30 – 13:30)', '18. jún 2026 (štvrtok), Bratislava (8:30 – 13:30)']
+            },
+            biznis: {
+                title: 'AI pre biznis',
+                subtitle: 'Strategický workshop pre vedenie',
+                gains: [
+                    'Identifikácia neefektívnych procesov na automatizáciu',
+                    'Návrh AI stratégie a meranie ROI',
+                    'Získanie konkurenčnej výhody cez adaptáciu',
+                    'Efektívne riadenie tímu s AI analytikou'
+                ],
+                structure: [
+                    { time: '5 hodín', label: 'Audit procesov + Strategický framework + Implementačný plán' }
+                ],
+                for: 'Majitelia MSP, riaditelia a board členovia.',
+                dates: ['21. apríl 2026 (utorok), Bratislava (9:00 – 14:00)', '12. máj 2026 (utorok), Trenčín (8:30 – 13:30)']
+            },
+            hr: {
+                title: 'AI pre efektívne HR',
+                subtitle: 'Moderný recruitment a people management',
+                gains: [
+                    'Automatizácia tvorby pútavých inzerátov',
+                    'Inteligentné filtrovanie stoviek CV za sekundy',
+                    'Zrýchlenie onboardingu a feedbacku',
+                    'Zlepšenie Employer Brandingu cez AI obsah'
+                ],
+                structure: [
+                    { time: 'Blok 1', label: 'AI v recruitment cykle – od sourcingu po podpis' },
+                    { time: 'Blok 2', label: 'People management a interná komunikácia' },
+                    { time: 'Blok 3', label: 'Praktický workshop s reálnymi HR dátami' }
+                ],
+                for: 'HR Manažéri, Recruitment špecialisti a HRD.',
+                dates: ['19. mája 2026 (utorok), Bratislava (9:00 – 14:00)', '26. mája 2026 (utorok), Trenčín (8:30 – 13:30)']
+            },
+            sales: {
+                title: 'AI pre efektívny Sales',
+                subtitle: 'Akcelerácia predaja a prospecting',
+                gains: [
+                    'Generovanie personalizovaných cold e-mailov',
+                    'Automatizácia zápisov v CRM a analýza hovorov',
+                    'LinkedIn Prospecting na autopilota',
+                    'Rýchla tvorba predajných argumentov'
+                ],
+                structure: [
+                    { time: '5 hodín', label: 'Lead gen moduly + CRM automatizácia + Sales Copywriting' }
+                ],
+                for: 'Obchodní riaditelia a Sales tímy.',
+                dates: ['5. mája 2026 (utorok), Trenčín (8:30 – 13:30)', '28. mája 2026 (štvrtok), Bratislava (9:00 – 14:00)']
+            },
+            copilot: {
+                title: 'Microsoft Copilot (MS 365)',
+                subtitle: 'Váš inteligentný kolega v MS 365',
+                gains: [
+                    'Excel analýza dát prirodzeným jazykom',
+                    'Teams automatické zápisnice a sumáre porád',
+                    'Outlook bleskové odpovede a správa priority',
+                    'Word tvorba dokumentov z podkladov jedným klikom'
+                ],
+                structure: [
+                    { time: '5 hodín', label: 'Deep-dive do aplikácií MS 365 s Copilotom' }
+                ],
+                for: 'Používatelia balíka Microsoft 365.',
+                dates: ['2. jún 2026 (utorok), Bratislava (9:00 – 14:00)', '23. jún 2026 (utorok), Trenčín (8:30 – 13:30)']
+            },
+            admin: {
+                title: 'AI kurz na mieru',
+                subtitle: 'Zamerané na špecifické use-cases pre Backoffice, Financie, Kvalitu a Údržbu',
+                gains: [
+                    'Spracovanie faktúr a dokumentácie bez manuálneho prepisovania',
+                    'Analýza a automatizácia reportingu pre finančné oddelenie',
+                    '<strong>Kvalita:</strong> Optimalizácia kontrolných procesov a analýza chýb',
+                    'Prediktívne plánovanie a analýza záznamov pre údržbu',
+                    'Zvýšenie presnosti dát a eliminácia chýb v operatíve'
+                ],
+                structure: [
+                    { time: '5 hodín', label: 'Hĺbková analýza vašich oddelení a špecifických tokov' },
+                    { time: 'Workshop', label: 'Implementácia AI asistentov pre konkrétne use-cases' },
+                    { time: 'Výsledok', label: 'Funkčné riešenia pre agendu backoffice-u, financií a kvality' }
+                ],
+                for: 'Tímy administratívy, finančníci, kontrolóri kvality a pracovníci prevádzky.',
+                dates: []
+            }
+        };
+
+        // --- Dáta pre Otvorené Kurzy (5 vybraných kurzov s ich najbližším termínom z databázy vyššie) ---
+        const openCourses = [
+            {
+                day: "21",
+                month: "Apr",
+                title: "AI pre biznis",
+                description: "Strategický workshop pre vedenie",
+                modalId: "biznis"
+            },
+            {
+                day: "05",
+                month: "Máj",
+                title: "AI pre efektívny Sales",
+                description: "Akcelerácia predaja a prospecting",
+                modalId: "sales"
+            },
+            {
+                day: "19",
+                month: "Máj",
+                title: "AI pre efektívne HR",
+                description: "Optimalizácia náboru a onboardingu",
+                modalId: "hr"
+            },
+            {
+                day: "02",
+                month: "Jún",
+                title: "Microsoft Copilot (MS 365)",
+                description: "Inteligentný asistent pre balík Office",
+                modalId: "copilot"
+            },
+            {
+                day: "04",
+                month: "Jún",
+                title: "Krok do sveta AI",
+                description: "Univerzálny štart pre celú firmu",
+                modalId: "krok"
+            }
+        ];
+
+        // Vykreslenie kartičiek Otvorených Kurzov
+        function renderCourses() {
+            const container = document.getElementById('courses-container');
+            if (!container) return;
+            
+            container.innerHTML = openCourses.map(course => {
+                return `
+                <div class="reveal-item group bg-white dark:bg-bhr-card border border-gray-100 dark:border-white/5 p-6 md:p-8 rounded-[30px] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 hover:border-bhr-red dark:hover:border-bhr-red transition duration-300 shadow-sm dark:shadow-none">
+                    <div class="flex items-center gap-4 md:gap-6 w-full md:w-auto">
+                        <div class="bg-gray-50 dark:bg-[#222] p-3 md:p-4 rounded-xl md:rounded-2xl group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition shrink-0 min-w-[70px] text-center border border-gray-100 dark:border-white/5">
+                            <span class="block text-xl md:text-2xl font-bold text-[#333333] dark:text-white">${course.day}</span>
+                            <span class="text-[10px] md:text-xs font-bold uppercase text-gray-400 dark:text-gray-500 group-hover:text-bhr-red">${course.month}</span>
+                        </div>
+                        <div>
+                            <h4 class="text-lg md:text-xl font-bold mb-1 dark:text-white">${course.title}</h4>
+                            <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 italic">${course.description}</p>
+                        </div>
+                    </div>
+                    <!-- Otvorené kurzy posielame do openModal bez parametru 'isInternal', tzn. ukážu sa termíny -->
+                    <button onclick="openModal('${course.modalId}', false)" class="w-full md:w-auto bg-bhr-red text-white px-8 py-3 rounded-xl font-bold hover:bg-bhr-dark-red transition shrink-0 shadow-lg shadow-red-100 dark:shadow-none text-base">Vybrať termín</button>
+                </div>
+            `}).join('');
+        }
+
+        renderCourses();
+
+        // Otvorenie modálu pre detaily kurzu
+        function openModal(id, isInternal = false) {
+            const d = workshopData[id];
+            const content = `
+                <div class="mb-6 md:mb-10 text-left">
+                    <span class="inline-block px-3 py-1 bg-red-50 dark:bg-red-900/20 text-bhr-red rounded-full text-[10px] md:text-xs font-bold uppercase tracking-widest mb-3 md:mb-4">${d.subtitle}</span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold mb-3 md:mb-4 text-[#333333] dark:text-white">${d.title}</h2>
+                    <div class="flex flex-wrap gap-2 md:gap-4 text-xs md:text-sm font-semibold text-gray-500 dark:text-gray-400 items-center">
+                        ${id === 'konzultacia' ? '<span>Typ: Individuálne stretnutie</span>' : '<span>Trvanie: 5 hodín</span>'}
+                        <span class="hidden md:inline">|</span>
+                        <span>Expert: Rastislav Kozlík</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 text-left">
+                    <div>
+                        <h4 class="font-bold text-lg md:text-xl text-[#333333] dark:text-white mb-4 md:mb-6">Čo získate:</h4>
+                        <ul class="bhr-list space-y-2 md:space-y-3 text-gray-600 dark:text-gray-400 text-xs md:text-sm">
+                            ${d.gains.map(g => `<li>${g}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg md:text-xl text-[#333333] dark:text-white mb-4 md:mb-6">Detaily:</h4>
+                        <div class="space-y-3 md:space-y-4">
+                            ${d.structure.map(s => `
+                                <div class="flex gap-3 md:gap-4 p-3 bg-gray-50 dark:bg-[#222] rounded-xl transition-colors duration-300">
+                                    <span class="font-bold text-bhr-red whitespace-nowrap text-[10px] md:text-xs mt-0.5">${s.time}</span>
+                                    <span class="text-xs text-gray-700 dark:text-gray-300 font-medium">${s.label}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-6 md:mt-8">
+                            <h4 class="font-bold text-base md:text-lg text-[#333333] dark:text-white mb-2">Pre koho:</h4>
+                            <p class="text-gray-600 dark:text-gray-400 text-xs leading-relaxed">${d.for}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('modalBody').innerHTML = content;
+
+            // Dynamický Footer na základe toho, či ide o interný alebo otvorený kurz
+            let footerHtml = '';
+            
+            // Ak je to INTERNÝ kurz, ukážeme LEN "Mám otázku" a "Zavrieť"
+            if (isInternal || !d.dates || d.dates.length === 0) {
+                footerHtml = `
+                    <a href="#kontakt" onclick="closeModal()" class="w-full md:flex-[3] block bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-6 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-base text-center hover:bg-black dark:hover:bg-white transition shadow-lg shadow-gray-200 dark:shadow-none">Mám otázku</a>
+                    <button onclick="closeModal()" class="w-full md:w-auto bg-transparent border-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 px-4 py-2 font-semibold text-sm transition underline underline-offset-2">Zavrieť</button>
+                `;
+            } 
+            // Ak je to OTVORENÝ kurz, ukážeme rolovacie menu s termínmi a maličké zavrieť
+            else {
+                const safeTitle = d.title.replace(/'/g, "\\'");
+                const datesList = d.dates.map(date => 
+                    `<li onclick="openOrderForm('${safeTitle}', '${date}')" class="py-3 px-4 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-bhr-red transition cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-0 text-xs md:text-sm font-bold text-bhr-red whitespace-nowrap">${date}</li>`
+                ).join('');
+
+                footerHtml = `
+                    <div class="relative group w-full md:flex-[3]">
+                        <button class="w-full bg-bhr-red text-white px-6 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-bold text-base md:text-lg text-center hover:bg-bhr-dark-red transition shadow-lg shadow-red-100 dark:shadow-none flex justify-center items-center gap-2">
+                            Termíny školení
+                            <svg class="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="absolute top-full md:bottom-full md:top-auto left-0 mt-2 md:mt-0 md:mb-3 w-full bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden">
+                            <ul class="text-gray-700 dark:text-gray-300 text-left">
+                                ${datesList}
+                            </ul>
+                        </div>
+                    </div>
+                    <button onclick="closeModal()" class="w-full md:w-auto bg-transparent border-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 px-4 py-2 font-semibold text-sm transition underline underline-offset-2">Zavrieť</button>
+                `;
+            }
+
+            document.getElementById('modalFooter').innerHTML = footerHtml;
+            document.getElementById('workshopModal').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal() {
+            document.getElementById('workshopModal').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        // --- Logika pre Objednávkový formulár ---
+        function openOrderForm(courseName, courseDate) {
+            closeModal();
+            document.getElementById('orderFormCourse').innerText = courseName;
+            document.getElementById('orderFormDate').innerText = 'Zvolený termín: ' + courseDate;
+            document.getElementById('hiddenCourse').value = courseName;
+            document.getElementById('hiddenDate').value = courseDate;
+            document.getElementById('orderFormOverlay').classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeOrderForm() {
+            document.getElementById('orderFormOverlay').classList.add('hidden');
+            document.body.classList.remove('modal-active');
+            
+            const formMessage = document.getElementById('formMessage');
+            if(formMessage) {
+                formMessage.classList.add('hidden');
+                formMessage.className = 'hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2';
+            }
+        }
+
+        // --- Logika pre EmailJS (Odosielanie formulára) ---
+        emailjs.init("04e9O4Qvgl2pnKmQ3");
+
+        const orderForm = document.getElementById('orderForm');
+        if (orderForm) {
+            orderForm.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                
+                const submitBtn = document.getElementById('submitBtn');
+                const formMessage = document.getElementById('formMessage');
+                const originalBtnText = submitBtn.innerText;
+                
+                submitBtn.innerText = "ODOSIELAM...";
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                formMessage.classList.add('hidden');
+
+                const formData = new FormData(orderForm);
+                const templateParams = {
+                    Kurz: document.getElementById('hiddenCourse').value,
+                    Termin: document.getElementById('hiddenDate').value,
+                    Meno: formData.get('Meno'),
+                    Spolocnost: formData.get('Spolocnost'),
+                    Email: formData.get('Email'),
+                    Telefon: formData.get('Telefon'),
+                    Kolegovia: formData.get('Kolegovia'),
+                    Sprava: formData.get('Sprava'),
+                    Zdroj: formData.get('Zdroj')
+                };
+
+                const serviceID = "service_nh851oc"; 
+                const adminTemplateID = "template_7nb8tr4"; 
+                const clientTemplateID = "template_5rkisx8"; 
+
+                // Odoslanie sekvenčne (najprv sebe, potom klientovi)
+                emailjs.send(serviceID, adminTemplateID, templateParams)
+                .then(function() {
+                    return emailjs.send(serviceID, clientTemplateID, templateParams);
+                })
+                .then(function() {
+                    formMessage.innerText = "Objednávka bola úspešne odoslaná! Ďakujeme.";
+                    formMessage.classList.remove('hidden', 'border-red-500', 'text-red-100', 'bg-red-900/50');
+                    formMessage.classList.add('border-green-400', 'text-green-100', 'bg-green-600/50');
+                    
+                    setTimeout(() => {
+                        orderForm.reset();
+                        closeOrderForm();
+                    }, 2500);
+                })
+                .catch(function(error) {
+                    console.error("Chyba EmailJS:", error);
+                    if (error && error.text) {
+                        formMessage.innerText = "Chyba: " + error.text + " Skontrolujte Template ID.";
+                    } else {
+                        formMessage.innerText = "Nastala chyba pri odosielaní. Skúste to prosím znova.";
+                    }
+                    formMessage.classList.remove('hidden', 'border-green-400', 'text-green-100', 'bg-green-600/50');
+                    formMessage.classList.add('border-red-500', 'text-red-100', 'bg-red-900/50');
+                })
+                .finally(function() {
+                    submitBtn.innerText = originalBtnText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
