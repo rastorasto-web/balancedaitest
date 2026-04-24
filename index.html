@@ -696,25 +696,6 @@
         </div>
     </div>
 
-    <!-- Decentný pop-up s najbližším kurzom -->
-    <div id="upcomingCoursePopup" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[65] max-w-[calc(100%-2rem)] md:max-w-sm w-full md:w-96 bg-white dark:bg-bhr-card rounded-2xl shadow-2xl border border-gray-100 dark:border-white/10 p-5 transform translate-y-8 opacity-0 pointer-events-none transition-all duration-500 ease-out">
-        <button onclick="closeUpcomingPopup()" aria-label="Zavrieť" class="absolute top-2 right-2 text-gray-300 hover:text-bhr-red dark:text-gray-500 dark:hover:text-bhr-red transition p-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-        <div class="flex items-start gap-4 pr-4">
-            <div class="bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2 text-center shrink-0 border border-red-100 dark:border-red-900/30">
-                <span id="popupDay" class="block text-xl font-bold text-bhr-red leading-tight"></span>
-                <span id="popupMonth" class="text-[10px] font-bold uppercase text-bhr-red"></span>
-            </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-bhr-red mb-1">Najbližší termín</p>
-                <h4 id="popupTitle" class="text-sm md:text-base font-bold text-[#333333] dark:text-white mb-1 leading-tight"></h4>
-                <p id="popupLocation" class="text-xs text-gray-500 dark:text-gray-400 mb-3"></p>
-                <button id="popupCta" class="bg-bhr-red text-white text-xs md:text-sm font-bold px-4 py-2 rounded-xl hover:bg-bhr-dark-red transition">Zobraziť detaily</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Pätka -->
     <footer class="py-10 md:py-12 border-t border-gray-100 dark:border-white/5 bg-white dark:bg-bhr-dark transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 md:px-6">
@@ -727,7 +708,7 @@
                 </div>
 
                 <!-- Copyright -->
-                <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center flex-1">© 2026 BALANCED HR s.r.o. Všetky ceny sú uvádzané bez DPH.<span class="block mt-1 text-[11px] md:text-xs opacity-80">Prevádzkovateľ: spoločnosť BALANCED HR s. r. o. so sídlom: Mlynské Nivy 48, 821 09 Bratislava – mestská časť Ružinov, IČO: 47 078 171</span></p>
+                <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center flex-1">© 2026 Balanced HR s.r.o. Všetky ceny sú uvádzané bez DPH.<span class="block mt-1 text-[11px] md:text-xs opacity-80">Prevádzkovateľ: spoločnosť BALANCED HR s. r. o. so sídlom: Mlynské Nivy 48, 821 09 Bratislava – mestská časť Ružinov, IČO: 47 078 171</span></p>
                 
                 <!-- LinkedIn a Logo -->
                 <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 font-bold w-full md:w-auto">
@@ -1110,64 +1091,6 @@
             };
         }).filter(c => c !== null);
 
-        // --- Decentný pop-up s najbližším kurzom ---
-        function closeUpcomingPopup() {
-            const popup = document.getElementById('upcomingCoursePopup');
-            if (!popup) return;
-            popup.classList.add('translate-y-8', 'opacity-0', 'pointer-events-none');
-            try { sessionStorage.setItem('bhrPopupDismissed', '1'); } catch(e) {}
-        }
-
-        (function initUpcomingPopup() {
-            try {
-                if (sessionStorage.getItem('bhrPopupDismissed') === '1') return;
-            } catch(e) {}
-            // Ak návštevník prišiel cez priamy link na konkrétny kurz, pop-up nezobrazíme
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('kurz')) return;
-            } catch(e) {}
-            if (!openCourses || openCourses.length === 0) return;
-
-            // Nájdi kurz s globálne najbližším dátumom
-            let nearest = null;
-            let nearestCourse = null;
-            openCourses.forEach(c => {
-                const ws = workshopData[c.modalId];
-                if (!ws || !ws.dates || ws.dates.length === 0) return;
-                const parsed = ws.dates
-                    .map(d => ({ str: d, date: parseSlovakDate(d) }))
-                    .filter(x => x.date)
-                    .sort((a, b) => a.date - b.date);
-                if (parsed.length === 0) return;
-                if (!nearest || parsed[0].date < nearest.date) {
-                    nearest = parsed[0];
-                    nearestCourse = c;
-                }
-            });
-            if (!nearestCourse || !nearest) return;
-
-            // Extrahuj mesto z textu (medzi "), " a " (")
-            const locMatch = nearest.str.match(/\),\s*([^(]+?)\s*\(/);
-            const location = locMatch ? locMatch[1].trim() : '';
-
-            const popup = document.getElementById('upcomingCoursePopup');
-            if (!popup) return;
-            document.getElementById('popupDay').innerText = String(nearest.date.getDate()).padStart(2, '0');
-            document.getElementById('popupMonth').innerText = slovakMonthDisplay[nearest.date.getMonth()];
-            document.getElementById('popupTitle').innerText = nearestCourse.title;
-            document.getElementById('popupLocation').innerText = (location ? location + ' • ' : '') + '299 € bez DPH';
-            document.getElementById('popupCta').onclick = function() {
-                closeUpcomingPopup();
-                openModal(nearestCourse.modalId, false);
-            };
-
-            // Zobraz po 4 sekundách jemnou animáciou
-            setTimeout(() => {
-                popup.classList.remove('translate-y-8', 'opacity-0', 'pointer-events-none');
-            }, 4000);
-        })();
-
         function renderCourses() {
             const container = document.getElementById('courses-container');
             if (!container) return;
@@ -1290,27 +1213,6 @@
             document.body.classList.add('modal-active');
         }
 
-        // --- Priamy link na konkrétny workshop (napr. ?kurz=hr) ---
-        (function handleDeepLink() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const kurzId = params.get('kurz');
-                if (!kurzId) return;
-                if (!workshopData[kurzId]) return;
-
-                // Najprv posuň stránku na sekciu otvorených kurzov
-                setTimeout(() => {
-                    const section = document.getElementById('otvorene');
-                    if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 150);
-
-                // Potom otvor modálne okno s detailami daného kurzu
-                setTimeout(() => {
-                    openModal(kurzId, false);
-                }, 900);
-            } catch(e) { /* tichý fallback - stránka funguje aj bez deep-linku */ }
-        })();
-
         function closeOrderForm() {
             document.getElementById('orderFormOverlay').classList.add('hidden');
             document.body.classList.remove('modal-active');
@@ -1322,4 +1224,93 @@
             }
 
             // Skryť GDPR text ak bol vyklopený pri zatvorení formulára
-            const gdpr
+            const gdprText = document.getElementById('gdprText');
+            const gdprIcon = document.getElementById('gdprIcon');
+            if(gdprText && !gdprText.classList.contains('hidden')) {
+                gdprText.classList.add('hidden');
+                gdprIcon.classList.remove('rotate-180');
+            }
+        }
+
+        // --- Logika pre EmailJS (Odosielanie formulára) ---
+        try {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({ publicKey: "04e9O4Qvgl2pnKmQ3" });
+            }
+        } catch (e) {
+            console.warn("EmailJS init chyba:", e);
+        }
+
+        const orderForm = document.getElementById('orderForm');
+        if (orderForm) {
+            orderForm.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                
+                const submitBtn = document.getElementById('submitBtn');
+                const formMessage = document.getElementById('formMessage');
+                const originalBtnText = submitBtn.innerText;
+                
+                if (typeof emailjs === 'undefined') {
+                    formMessage.innerText = "Služba pre odosielanie formulárov nie je momentálne dostupná. Skontrolujte prosím svoje pripojenie alebo si vypnite blokovanie reklám.";
+                    formMessage.classList.remove('hidden');
+                    formMessage.classList.add('border-red-500', 'text-red-100', 'bg-red-900/50');
+                    return;
+                }
+                
+                submitBtn.innerText = "ODOSIELAM...";
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                formMessage.classList.add('hidden');
+
+                const formData = new FormData(orderForm);
+                const templateParams = {
+                    Kurz: document.getElementById('hiddenCourse').value,
+                    Termin: document.getElementById('hiddenDate').value,
+                    Meno: formData.get('Meno'),
+                    Spolocnost: formData.get('Spolocnost'),
+                    Email: formData.get('Email'),
+                    Telefon: formData.get('Telefon'),
+                    Kolegovia: formData.get('Kolegovia'),
+                    Sprava: formData.get('Sprava'),
+                    Zdroj: formData.get('Zdroj')
+                };
+
+                const serviceID = "service_nh851oc"; 
+                const adminTemplateID = "template_7nb8tr4"; 
+                const clientTemplateID = "template_5uwizn5"; 
+
+                // Odoslanie sekvenčne (najprv sebe, potom klientovi)
+                emailjs.send(serviceID, adminTemplateID, templateParams)
+                .then(function() {
+                    return emailjs.send(serviceID, clientTemplateID, templateParams);
+                })
+                .then(function() {
+                    formMessage.innerText = "Objednávka bola úspešne odoslaná! Ďakujeme.";
+                    formMessage.classList.remove('hidden', 'border-red-500', 'text-red-100', 'bg-red-900/50');
+                    formMessage.classList.add('border-green-400', 'text-green-100', 'bg-green-600/50');
+                    
+                    setTimeout(() => {
+                        orderForm.reset();
+                        closeOrderForm();
+                    }, 2500);
+                })
+                .catch(function(error) {
+                    console.error("Chyba EmailJS:", error);
+                    if (error && error.text) {
+                        formMessage.innerText = "Chyba: " + error.text + " Skontrolujte Template ID.";
+                    } else {
+                        formMessage.innerText = "Nastala chyba pri odosielaní. Skúste to prosím znova.";
+                    }
+                    formMessage.classList.remove('hidden', 'border-green-400', 'text-green-100', 'bg-green-600/50');
+                    formMessage.classList.add('border-red-500', 'text-red-100', 'bg-red-900/50');
+                })
+                .finally(function() {
+                    submitBtn.innerText = originalBtnText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
