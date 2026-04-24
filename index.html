@@ -696,6 +696,25 @@
         </div>
     </div>
 
+    <!-- Decentný pop-up s najbližším kurzom -->
+    <div id="upcomingCoursePopup" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[65] max-w-[calc(100%-2rem)] md:max-w-sm w-full md:w-96 bg-white dark:bg-bhr-card rounded-2xl shadow-2xl border border-gray-100 dark:border-white/10 p-5 transform translate-y-8 opacity-0 pointer-events-none transition-all duration-500 ease-out">
+        <button onclick="closeUpcomingPopup()" aria-label="Zavrieť" class="absolute top-2 right-2 text-gray-300 hover:text-bhr-red dark:text-gray-500 dark:hover:text-bhr-red transition p-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div class="flex items-start gap-4 pr-4">
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2 text-center shrink-0 border border-red-100 dark:border-red-900/30">
+                <span id="popupDay" class="block text-xl font-bold text-bhr-red leading-tight"></span>
+                <span id="popupMonth" class="text-[10px] font-bold uppercase text-bhr-red"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-bhr-red mb-1">Najbližší termín</p>
+                <h4 id="popupTitle" class="text-sm md:text-base font-bold text-[#333333] dark:text-white mb-1 leading-tight"></h4>
+                <p id="popupLocation" class="text-xs text-gray-500 dark:text-gray-400 mb-3"></p>
+                <button id="popupCta" class="bg-bhr-red text-white text-xs md:text-sm font-bold px-4 py-2 rounded-xl hover:bg-bhr-dark-red transition">Zobraziť detaily</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Pätka -->
     <footer class="py-10 md:py-12 border-t border-gray-100 dark:border-white/5 bg-white dark:bg-bhr-dark transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 md:px-6">
@@ -1090,6 +1109,61 @@
                 modalId: meta.modalId
             };
         }).filter(c => c !== null);
+
+        // --- Pop-up s najblizsim kurzom (decentny) ---
+        function closeUpcomingPopup() {
+            const popup = document.getElementById('upcomingCoursePopup');
+            if (!popup) return;
+            popup.classList.add('translate-y-8', 'opacity-0', 'pointer-events-none');
+            try { sessionStorage.setItem('bhrPopupDismissed', '1'); } catch(e) {}
+        }
+
+        (function initUpcomingPopup() {
+            try {
+                if (sessionStorage.getItem('bhrPopupDismissed') === '1') return;
+            } catch(e) {}
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('kurz')) return;
+            } catch(e) {}
+            if (!openCourses || openCourses.length === 0) return;
+
+            let nearest = null;
+            let nearestCourse = null;
+            openCourses.forEach(c => {
+                const ws = workshopData[c.modalId];
+                if (!ws || !ws.dates || ws.dates.length === 0) return;
+                const parsed = ws.dates
+                    .map(d => ({ str: d, date: parseSlovakDate(d) }))
+                    .filter(x => x.date)
+                    .sort((a, b) => a.date - b.date);
+                if (parsed.length === 0) return;
+                if (!nearest || parsed[0].date < nearest.date) {
+                    nearest = parsed[0];
+                    nearestCourse = c;
+                }
+            });
+            if (!nearestCourse || !nearest) return;
+
+            const locMatch = nearest.str.match(/\),\s*([^(]+?)\s*\(/);
+            const location = locMatch ? locMatch[1].trim() : '';
+
+            const popup = document.getElementById('upcomingCoursePopup');
+            if (!popup) return;
+            document.getElementById('popupDay').innerText = String(nearest.date.getDate()).padStart(2, '0');
+            document.getElementById('popupMonth').innerText = slovakMonthDisplay[nearest.date.getMonth()];
+            document.getElementById('popupTitle').innerText = nearestCourse.title;
+            document.getElementById('popupLocation').innerText = (location ? location + ' \u2022 ' : '') + '299 \u20ac bez DPH';
+            document.getElementById('popupCta').onclick = function() {
+                closeUpcomingPopup();
+                openModal(nearestCourse.modalId, false);
+            };
+
+            setTimeout(() => {
+                popup.classList.remove('translate-y-8', 'opacity-0', 'pointer-events-none');
+            }, 4000);
+        })();
+
 
         function renderCourses() {
             const container = document.getElementById('courses-container');
