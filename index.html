@@ -1189,6 +1189,26 @@
 
         renderCourses();
 
+        // --- PRIAMY ODKAZ NA KONKRÉTNY WORKSHOP ---
+        // Použitie: yourpage.html?kurz=hr  alebo  ?kurz=biznis  atď.
+        // Platné hodnoty: krok | biznis | hr | sales | copilot | admin | konzultacia
+        (function checkUrlParam() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const kurzParam = urlParams.get('kurz');
+                if (kurzParam && workshopData[kurzParam]) {
+                    // Krátky timeout aby sa stránka stihla vyrenderovať pred otvorením modálu
+                    setTimeout(() => {
+                        const isInternal = !workshopData[kurzParam].dates || workshopData[kurzParam].dates.length === 0;
+                        openModal(kurzParam, isInternal);
+                        // Scrollujeme na sekciu s workshopmi pre lepší kontext
+                        const targetSection = isInternal ? document.getElementById('internne') : document.getElementById('otvorene');
+                        if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 600);
+                }
+            } catch(e) {}
+        })();
+
         function openModal(id, isInternal = false) {
             const d = workshopData[id];
             const content = `
