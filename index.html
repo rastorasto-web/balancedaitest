@@ -1,19 +1,31 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0], j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src= 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f); })(window,document,'script','dataLayer','GTM-W2BD7G2B');</script>
+    <!-- End Google Tag Manager -->
+    <!-- Start cookieyes banner --> <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/f620520852a83fe857738cefb98c2b8c/script.js"></script> <!-- End cookieyes banner -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI Workshopy | Balanced HR - Praktické vzdelávanie</title>
     
     <!-- Prevencia prebliknutia pre Dark Mode -->
     <script>
-        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
+        try {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        } catch (e) {
+            // Bezpečnostná poistka pre iframe/canvas prostredia, kde môže byť localStorage zablokovaný
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
         }
     </script>
 
+    <!-- OPRAVENÉ: Odstránený crossorigin atribút, aby Tailwind načítal štýly -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -108,18 +120,21 @@
         }
     </style>
     
-    <!-- EmailJS knižnica -->
+    <!-- EmailJS knižnica - tiež opravené pre istotu -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body class="text-[#333333] dark:text-gray-200 bg-white dark:bg-bhr-dark transition-colors duration-300 overflow-x-hidden">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W2BD7G2B" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
 
     <!-- Navigácia -->
     <nav class="fixed w-full z-50 glass-nav transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-2">
+            <a href="https://balanced-hr.com/" target="_blank" class="flex items-center space-x-2 hover:opacity-80 transition">
                 <img src="./logotyp_transparent.png" alt="Logo Balanced HR" class="h-8 md:h-10 w-auto object-contain">
                 <span class="text-lg md:text-xl font-bold tracking-tight dark:text-white uppercase">Balanced <span class="text-bhr-red">HR</span></span>
-            </div>
+            </a>
             
             <!-- Desktop Menu -->
             <div class="hidden lg:flex items-center space-x-6 xl:space-x-8 font-medium text-sm xl:text-base">
@@ -179,7 +194,7 @@
             </div>
             <div class="w-full md:w-1/2 relative mt-8 md:mt-0 reveal" style="transition-delay: 200ms;">
                 <!-- Pulzujúce Logo B -->
-                <div class="relative w-[75%] sm:w-[60%] md:w-[65%] mx-auto aspect-square bg-gray-50 dark:bg-bhr-card rounded-[50px] md:rounded-[80px] flex items-center justify-center overflow-hidden border border-gray-100 dark:border-white/5 shadow-inner dark:shadow-none transition-colors duration-300">
+                <div class="relative w-[75%] sm:w-[60%] md:w-[55%] mx-auto aspect-square bg-gray-50 dark:bg-bhr-card rounded-[50px] md:rounded-[80px] flex items-center justify-center overflow-hidden border border-gray-100 dark:border-white/5 shadow-inner dark:shadow-none transition-colors duration-300">
                     <img src="./Logo_B_Red.png" alt="Balanced HR Logo" class="w-full h-full relative z-10 animate-pulse-custom object-cover">
                 </div>
             </div>
@@ -192,8 +207,8 @@
             <div class="flex flex-col lg:flex-row gap-16 items-start">
                 <div class="w-full lg:w-3/5 reveal">
                     <h2 class="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-12 md:mb-20 leading-tight">
-                        Neúčime AI technológiu.<br>
-                        <span class="text-bhr-red uppercase italic">Učíme prácu s AI.</span>
+                        Neučíme AI technológiu.<br>
+                        <span class="text-bhr-red uppercase italic inline-block mt-3 md:mt-5">Učíme prácu s AI.</span>
                     </h2>
 
                     <div class="space-y-10 md:space-y-16">
@@ -422,14 +437,19 @@
                     <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 md:mb-6 text-[#333333] dark:text-white">Otvorené kurzy</h2>
                     <p class="text-sm md:text-lg text-gray-500 dark:text-gray-400">Skupinové vzdelávanie pre váš profesionálny rast.</p>
                 </div>
-                <div class="text-left md:text-right mt-2 md:mt-0">
-                    <span class="text-bhr-red font-bold text-2xl md:text-3xl">300 €</span>
-                    <span class="text-gray-400 dark:text-gray-500 block text-xs md:text-sm font-bold uppercase tracking-wider">bez DPH / účastník</span>
+                <div class="text-left md:text-right mt-2 md:mt-0 shrink-0">
+                    <div>
+                        <span class="text-bhr-red font-bold text-2xl md:text-3xl">299 €</span>
+                        <span class="text-gray-400 dark:text-gray-500 text-xs md:text-sm ml-1 uppercase">bez <span class="font-bold">DPH</span></span>
+                    </div>
+                    <div class="text-gray-400 dark:text-gray-500 text-[11px] md:text-xs font-normal mt-1 md:max-w-[280px] md:ml-auto leading-tight uppercase">
+                        (Každý ďalší účastník z rovnakej firmy za <span class="font-bold">250 €</span>/bez <span class="font-bold">DPH</span>)
+                    </div>
                 </div>
             </div>
 
             <!-- Sem sa vložia kurzy automaticky cez JavaScript -->
-            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 stagger-grid-open">
+            <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 stagger-grid-open">
                 <!-- Javascript fills this with 5 courses -->
             </div>
         </div>
@@ -444,7 +464,7 @@
             
             <!-- Flex wrap kontajner pre 13 lôg - centrovanie zaručí, že nepárny počet vyzerá dobre -->
             <div id="logos-container" class="flex flex-wrap justify-center items-center gap-8 md:gap-12 mb-16 md:mb-32 px-4 stagger-grid-logos">
-                <!-- LOGO 1 až 13 (Zmeň príponu na .jpg alebo .webp, ak to tvoj súbor vyžaduje) -->
+                <!-- LOGO 1 až 13 -->
                 <div class="reveal-item w-20 md:w-32 flex justify-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition duration-500">
                     <img src="./Logo1.png" alt="Logo klienta 1" class="max-h-12 md:max-h-16 object-contain">
                 </div>
@@ -523,7 +543,7 @@
                     <h2 class="text-4xl md:text-5xl font-extrabold mb-3 md:mb-4">Lektor: <span class="text-bhr-red">Rastislav Kozlík</span></h2>
                     <p class="text-lg md:text-xl text-gray-400 font-semibold mb-6 md:mb-8">Expert na AI a biznis transformáciu v Balanced HR</p>
                     <div class="space-y-4 md:space-y-6 text-base md:text-lg text-gray-300 leading-relaxed text-left">
-                        <p>Pomáham majiteľom firiem a manažérom demystifikovať umelú inteligenciu. Moje školenia nie sú o teórii, ale o praktických riešeniach, ktoré viete nasadiť do hodiny po našom stretnutí. Zbavíme sa strachu z komplexnosti a ukážeme si, že aj dostupné nástroje za pár eur mesačne dokážu skrátiť prípravu ponúk či reportov z hodín na minúty. Prevediem vás svetom AI vecne a profesionálne, s jasným zameraním na vašu konkurenčnú výhodu.</strong>.</p>
+                        <p>Pomáham majiteľom firiem a manažérom demystifikovať umelú inteligenciu. Moje školenia nie sú o teórii, ale o praktických riešeniach, ktoré viete nasadiť ihneď po našom stretnutí. Zbavíme sa strachu z komplexnosti a ukážeme si, že aj dostupné nástroje za pár eur mesačne dokážu skrátiť prípravu ponúk či reportov z hodín na minúty. Prevediem vás svetom AI vecne a profesionálne, s jasným zameraním na vašu konkurenčnú výhodu</strong>.</p>
                         <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 pt-2 md:pt-4 text-sm md:text-base">
                             <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> Expert na AI v HR</li>
                             <li class="flex items-center gap-3"><span class="text-bhr-red">✔</span> Strategický konzultant pre MSP</li>
@@ -547,8 +567,8 @@
             <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 md:mb-6 italic text-[#333333] dark:text-white">Pripravení na AI transformáciu?</h2>
             <p class="text-base md:text-xl text-gray-500 dark:text-gray-400 mb-8 md:mb-12">Dohodnime si hovor a zistíme, kde vo vašej firme pálite najviac času.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
-                <a href="mailto:info@balancedhr.sk" class="bg-bhr-red text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover-bg-bhr-dark-red transition shadow-xl shadow-red-100 dark:shadow-none w-full sm:w-auto">info@balancedhr.sk</a>
-                <a href="tel:+421948705669" class="bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover:bg-black dark:hover:bg-white transition shadow-xl shadow-gray-200 dark:shadow-none w-full sm:w-auto">+421 948 705 669</a>
+                <a href="mailto:ai@balanced-hr.com" class="bg-bhr-red text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover-bg-bhr-dark-red transition shadow-xl shadow-red-100 dark:shadow-none w-full sm:w-auto">ai@balanced-hr.com</a>
+                <a href="tel:+421 948 948 133" class="bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-8 md:px-12 py-4 md:py-5 rounded-2xl font-bold text-lg md:text-xl hover:bg-black dark:hover:bg-white transition shadow-xl shadow-gray-200 dark:shadow-none w-full sm:w-auto">+421 948 948 133</a>
             </div>
         </div>
     </section>
@@ -572,108 +592,224 @@
     </div>
 
     <!-- OBJEDNÁVKOVÝ FORMULÁR OVERLAY -->
-    <div id="orderFormOverlay" class="fixed inset-0 z-[70] hidden bg-bhr-red overflow-y-auto">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 md:py-12 text-white relative">
-            <button onclick="closeOrderForm()" class="absolute top-4 right-4 md:top-8 md:right-0 text-white hover:text-gray-200 opacity-80 hover:opacity-100 transition z-10 p-2">
-                <svg class="w-8 h-8 md:w-10 md:h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+    <div id="orderFormOverlay" class="fixed inset-0 z-[70] hidden flex items-center justify-center px-4 md:px-6">
+        <div class="absolute inset-0 modal-overlay" onclick="closeOrderForm()"></div>
+        <div class="bg-[#AA0000] rounded-[30px] md:rounded-[40px] max-w-2xl w-full relative z-10 max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10 p-6 sm:p-8 md:p-10 text-white">
+            <button onclick="closeOrderForm()" class="absolute top-5 right-5 md:top-6 md:right-6 text-white/80 hover:text-white transition z-20 bg-black/10 hover:bg-black/30 rounded-full p-2">
+                <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
             
-            <h2 class="text-2xl md:text-4xl font-bold mb-2 pt-6 md:pt-0">Objednávka školenia</h2>
-            <h3 id="orderFormCourse" class="text-xl md:text-2xl mb-1 font-semibold text-white"></h3>
-            <p id="orderFormDate" class="mb-6 md:mb-8 opacity-90 font-medium text-sm md:text-base"></p>
+            <div class="pr-12">
+                <h2 class="text-2xl md:text-3xl font-bold mb-1">Objednávka školenia</h2>
+                <h3 id="orderFormCourse" class="text-lg md:text-xl font-semibold text-white/90"></h3>
+                <p id="orderFormDate" class="mb-6 opacity-80 font-medium text-xs md:text-sm"></p>
+            </div>
 
-            <p class="mb-6 md:mb-8 text-base md:text-lg">Pre viac informácií nás neváhajte kontaktovať.</p>
-
-            <form id="orderForm" class="space-y-4 md:space-y-5 text-left">
+            <form id="orderForm" class="space-y-3 md:space-y-4 text-left">
                 <input type="hidden" name="Kurz" id="hiddenCourse">
                 <input type="hidden" name="Termin" id="hiddenDate">
 
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Meno (povinné)</label>
-                    <input type="text" name="Meno" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Meno (povinné)</label>
+                        <input type="text" name="Meno" required class="w-full p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Spoločnosť (povinné)</label>
+                        <input type="text" name="Spolocnost" required class="w-full p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Váš email (povinné)</label>
+                        <input type="email" name="Email" required class="w-full p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Váš telefón</label>
+                        <input type="tel" name="Telefon" class="w-full p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                    </div>
                 </div>
                 
                 <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Spoločnosť (povinné)</label>
-                    <input type="text" name="Spolocnost" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
+                    <label class="block mb-1 text-xs md:text-sm font-medium">Chcem prihlásiť nasledovných kolegov</label>
+                    <input type="text" name="Kolegovia" class="w-full p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
                 </div>
                 
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Váš email (povinné)</label>
-                    <input type="email" name="Email" required class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
-                </div>
-                
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Váš telefón</label>
-                    <input type="tel" name="Telefon" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
-                </div>
-                
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Chcem prihlásiť nasledovných kolegov</label>
-                    <input type="text" name="Kolegovia" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black">
-                </div>
-                
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Vaša správa</label>
-                    <textarea name="Sprava" rows="3" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black"></textarea>
-                </div>
-                
-                <div>
-                    <label class="block mb-1.5 md:mb-2 text-sm font-medium">Odkiaľ ste sa dozvedeli o workshope?</label>
-                    <div class="relative">
-                        <select name="Zdroj" class="w-full p-2.5 md:p-3 text-base md:text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black appearance-none cursor-pointer">
-                            <option value="">—Vyberte možnosť—</option>
-                            <option value="LinkedIn">LinkedIn</option>
-                            <option value="Facebook">Facebook</option>
-                            <option value="Vyhľadávanie Google">Vyhľadávanie Google</option>
-                            <option value="Od známeho">Od známeho / Odporúčanie</option>
-                            <option value="Iné">Iné</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Odkiaľ ste sa dozvedeli o workshope?</label>
+                        <div class="relative h-full">
+                            <select name="Zdroj" class="w-full h-[36px] md:h-[40px] p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black appearance-none cursor-pointer">
+                                <option value="">—Vyberte možnosť—</option>
+                                <option value="LinkedIn">LinkedIn</option>
+                                <option value="Facebook">Facebook</option>
+                                <option value="Vyhľadávanie Google">Vyhľadávanie Google</option>
+                                <option value="Od známeho">Od známeho / Odporúčanie</option>
+                                <option value="Iné">Iné</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-black">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
                         </div>
+                    </div>
+                    <div>
+                        <label class="block mb-1 text-xs md:text-sm font-medium">Vaša správa</label>
+                        <textarea name="Sprava" rows="1" class="w-full min-h-[36px] md:min-h-[40px] p-2 md:p-2.5 text-sm text-black bg-white form-input-sharp outline-none focus:ring-2 focus:ring-black"></textarea>
                     </div>
                 </div>
 
-                <div class="space-y-3 pt-4 md:pt-6">
+                <!-- Skrátené texty s expandovateľným oknom pre zbytok podmienok -->
+                <div class="space-y-2 pt-3 md:pt-4">
                     <label class="flex items-start gap-3 cursor-pointer group">
-                        <input type="checkbox" required name="Suhlas_GDPR" value="Ano" class="mt-1 w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-black shrink-0">
-                        <span class="text-[13px] md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím so spracovaním mojich osobných údajov. (1)</span>
+                        <input type="checkbox" required name="Suhlas_GDPR" value="Ano" class="mt-1 w-4 h-4 cursor-pointer accent-black shrink-0">
+                        <span class="text-xs md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím so spracovaním osobných údajov pre účely organizácie školenia. *</span>
                     </label>
                     <label class="flex items-start gap-3 cursor-pointer group">
-                        <input type="checkbox" required name="Suhlas_FotoVideo" value="Ano" class="mt-1 w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-black shrink-0">
-                        <span class="text-[13px] md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím so spracovaním, upravením, použitím a reprodukovaním audio-vizuálneho záznamu. (2)</span>
+                        <input type="checkbox" required name="Suhlas_FotoVideo" value="Ano" class="mt-1 w-4 h-4 cursor-pointer accent-black shrink-0">
+                        <span class="text-xs md:text-sm font-medium opacity-90 group-hover:opacity-100 transition leading-snug">Súhlasím s vyhotovením a použitím audio-vizuálneho záznamu. *</span>
                     </label>
+                </div>
+
+                <!-- Tlačidlo na rozbalenie dlhého textu -->
+                <div class="mt-2">
+                    <button type="button" onclick="toggleGDPR()" class="text-[10px] md:text-[11px] text-white/70 hover:text-white underline underline-offset-2 transition flex items-center gap-1">
+                        Zobraziť celé znenie právnych podmienok
+                        <svg id="gdprIcon" class="w-3 h-3 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Skrytá Právna doložka -->
+                <div id="gdprText" class="hidden mt-3 text-[10px] leading-relaxed opacity-80 space-y-2 text-justify border-t border-white/20 pt-3">
+                    <p>1) Súhlasím so spracovaním mojich osobných údajov spoločnosťou BALANCED HR, s. r. o., so sídlom Mlynské nivy 48, 821 09 Bratislava, v rozsahu kontaktných údajov na účel zaradenia do elektronickej databázy záujemcov o vzdelávanie, v súlade s Nariadením Európskeho parlamentu a Rady EÚ 2016/679 o ochrane fyzických osôb pri spracúvaní osobných údajov a o voľnom pohybe takýchto údajov (GDPR) a zákon č. 18/2018 Z. z. o ochrane osobných údajov, ktoré nadobudlo účinnosť od 25. 5. 2018. Vyhlasujem, že všetky údaje v poskytnutom rozsahu sú presné, správne a aktuálne.</p>
+                    <p>2) Týmto vyjadrujem súhlas so spracovaním, upravením, použitím a reprodukovaním audio-vizuálneho záznamu, ktorý bude vytvorený počas školenia za účelom prezentácie organizácie, preukázania kvality školení na webovej stránke, sociálnych sieťach a iných propagačných materiáloch spoločnosti BALANCED HR, s.r.o. Tento súhlas udeľujem bezplatne.</p>
+                    <p>Udelené súhlasy sú udelené na dobu 3 roky alebo do doručenia písomného odvolania tohto súhlasu akýmkoľvek spôsobom. Súhlasy máte právo kedykoľvek odvolať zaslaním e-mailu na adresu <a href="mailto:ai@balanced-hr.com" class="underline">ai@balanced-hr.com</a> alebo zaslaním písomného oznámenia na adresu: Mlynské nivy 48, 821 09 Bratislava.</p>
                 </div>
 
                 <!-- Skrytý box pre zobrazenie výsledku odoslania -->
-                <div id="formMessage" class="hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2"></div>
+                <div id="formMessage" class="hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2 mt-4"></div>
 
-                <div class="pt-4 md:pt-6">
-                    <button type="submit" id="submitBtn" class="w-full md:w-auto border-2 border-white text-white px-8 py-3 md:py-4 font-bold text-lg md:text-base hover:bg-white hover:text-bhr-red transition">ODOŠLI</button>
+                <div class="pt-4">
+                    <button type="submit" id="submitBtn" class="w-full border-2 border-white text-white px-8 py-3 font-bold text-base md:text-lg hover:bg-white hover:text-[#AA0000] rounded-xl transition">ODOŠLI ZÁVÄZNÚ OBJEDNÁVKU</button>
                 </div>
             </form>
+        </div>
+    </div>
 
-            <!-- Právna doložka -->
-            <div class="mt-12 md:mt-16 text-[10px] md:text-[11px] leading-relaxed opacity-70 space-y-3 md:space-y-4 text-justify max-w-3xl border-t border-white/20 pt-6 md:pt-8">
-                <p>1) Súhlasím so spracovaním mojich osobných údajov spoločnosťou BALANCED HR, s. r. o., so sídlom Mlynské nivy 48, 821 09 Bratislava, v rozsahu kontaktných údajov na účel zaradenia do elektronickej databázy záujemcov o vzdelávanie, v súlade s Nariadením Európskeho parlamentu a Rady EÚ 2016/679 o ochrane fyzických osôb pri spracúvaní osobných údajov a o voľnom pohybe takýchto údajov (GDPR) a zákon č. 18/2018 Z. z. o ochrane osobných údajov, ktoré nadobudlo účinnosť od 25. 5. 2018. Vyhlasujem, že všetky údaje v poskytnutom rozsahu sú presné, správne a aktuálne.</p>
-                <p>2) Týmto vyjadrujem súhlas so spracovaním, upravením, použitím a reprodukovaním audio-vizuálneho záznamu, ktorý bude vytvorený počas školenia za účelom prezentácie organizácie, preukázania kvality školení na webovej stránke, sociálnych sieťach a iných propagačných materiáloch spoločnosti BALANCED HR, s.r.o. Tento súhlas udeľujem bezplatne.</p>
-                <p>Udelené súhlasy sú udelené na dobu 3 roky alebo do doručenia písomného odvolania tohto súhlasu akýmkoľvek spôsobom. Súhlasy máte právo kedykoľvek odvolať zaslaním e-mailu na adresu <a href="mailto:info@balanced-hr.com" class="underline">info@balanced-hr.com</a> alebo zaslaním písomného oznámenia na adresu: Mlynské nivy 48, 821 09 Bratislava.</p>
+    <!-- Decentný pop-up s najbližším kurzom -->
+    <div id="upcomingCoursePopup" class="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[65] max-w-[calc(100%-2rem)] md:max-w-sm w-full md:w-96 bg-white dark:bg-bhr-card rounded-2xl shadow-2xl border border-gray-100 dark:border-white/10 p-5 transform translate-y-8 opacity-0 pointer-events-none transition-all duration-500 ease-out">
+        <button onclick="closeUpcomingPopup()" aria-label="Zavrieť" class="absolute top-2 right-2 text-gray-300 hover:text-bhr-red dark:text-gray-500 dark:hover:text-bhr-red transition p-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <div class="flex items-start gap-4 pr-4">
+            <div class="bg-red-50 dark:bg-red-900/20 rounded-xl px-3 py-2 text-center shrink-0 border border-red-100 dark:border-red-900/30">
+                <span id="popupDay" class="block text-xl font-bold text-bhr-red leading-tight"></span>
+                <span id="popupMonth" class="text-[10px] font-bold uppercase text-bhr-red"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-bhr-red mb-1">Najbližší termín</p>
+                <h4 id="popupTitle" class="text-sm md:text-base font-bold text-[#333333] dark:text-white mb-1 leading-tight"></h4>
+                <p id="popupLocation" class="text-xs text-gray-500 dark:text-gray-400 mb-3"></p>
+                <button id="popupCta" class="bg-bhr-red text-white text-xs md:text-sm font-bold px-4 py-2 rounded-xl hover:bg-bhr-dark-red transition">Zobraziť detaily</button>
             </div>
         </div>
     </div>
 
     <!-- Pätka -->
     <footer class="py-10 md:py-12 border-t border-gray-100 dark:border-white/5 bg-white dark:bg-bhr-dark transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-sm text-center md:text-left">
-            <div class="flex items-center space-x-2">
-                <img src="./logotyp_transparent.png" alt="Logo Balanced HR" class="h-6 md:h-8 w-auto object-contain">
-                <span class="font-bold tracking-tight dark:text-white uppercase">Balanced <span class="text-bhr-red">HR</span></span>
+        <div class="max-w-7xl mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-sm text-center md:text-left">
+                <!-- Ochrana osobných údajov -->
+                <div class="flex justify-center md:justify-start w-full md:w-auto">
+                    <button onclick="document.getElementById('gdpr-full-text').classList.toggle('hidden')" class="cursor-pointer font-bold text-bhr-red py-2 px-6 border-2 border-bhr-red rounded-lg inline-block transition-colors hover:bg-bhr-red hover:text-white text-center w-max">
+                        Ochrana osobných údajov
+                    </button>
+                </div>
+
+                <!-- Copyright -->
+                <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500 text-center flex-1">© 2026 Balanced HR s.r.o. Všetky ceny sú uvádzané bez DPH.<span class="block mt-1 text-[11px] md:text-xs opacity-80">Prevádzkovateľ: spoločnosť BALANCED HR s. r. o. so sídlom: Mlynské Nivy 48, 821 09 Bratislava – mestská časť Ružinov, IČO: 47 078 171</span></p>
+                
+                <!-- LinkedIn a Logo -->
+                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 font-bold w-full md:w-auto">
+                    <a href="https://www.linkedin.com/company/balanced-hr-s-r-o-/" target="_blank" class="hover:text-bhr-red dark:text-gray-300 dark:hover:text-bhr-red transition shrink-0">LinkedIn</a>
+                    <a href="https://balanced-hr.com/" target="_blank" class="flex items-center space-x-2 shrink-0 hover:opacity-80 transition">
+                        <img src="./logotyp_transparent.png" alt="Logo Balanced HR" class="h-6 md:h-8 w-auto object-contain">
+                        <span class="font-bold tracking-tight dark:text-white uppercase">Balanced <span class="text-bhr-red">HR</span></span>
+                    </a>
+                </div>
             </div>
-            <p class="text-xs md:text-sm text-gray-400 dark:text-gray-500">© 2024 Balanced HR s.r.o. Všetky ceny sú uvádzané bez DPH.</p>
-            <div class="flex justify-center space-x-6 font-bold">
-                <a href="https://www.linkedin.com/company/balanced-hr-s-r-o-/" target="_blank" class="hover:text-bhr-red dark:text-gray-300 dark:hover:text-bhr-red transition">LinkedIn</a>
-                <a href="#" class="hover:text-bhr-red dark:text-gray-300 dark:hover:text-bhr-red transition">GDPR</a>
+
+            <!-- Ochrana osobných údajov (GDPR) Rozbaľovací blok -->
+            <div id="gdpr-full-text" class="hidden mt-10 p-6 md:p-8 bg-gray-50 dark:bg-bhr-card border-l-4 border-bhr-red rounded-r-xl text-sm md:text-base text-[#333333] dark:text-gray-300 text-left shadow-sm dark:shadow-none transition-colors duration-300 max-w-4xl mx-auto">
+                <h4 class="text-bhr-red font-bold text-lg mt-0 mb-2">1. Úvod</h4>
+                <p class="mb-4">Vitajte na webovej stránke spoločnosti BALANCED HR s.r.o.</p>
+                <p class="mb-6">Tieto Zásady ochrany osobných údajov vysvetľujú, ako zhromažďujeme, používame, uchovávame a chránime vaše osobné údaje, keď nás kontaktujete ohľadom AI kurzov, workshopov a implementácie AI nástrojov vo firmách.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">2. Informácie, ktoré zhromažďujeme</h4>
+                <p class="mb-2">Pri použití kontaktného formulára alebo registrácie na AI kurz zhromažďujeme najmä:</p>
+                <ul class="list-disc pl-5 mb-4 space-y-1">
+                    <li>Meno alebo názov firmy</li>
+                    <li>Telefónne číslo</li>
+                    <li>Emailová adresa</li>
+                    <li>Voliteľná správa</li>
+                </ul>
+                <p class="mb-6">Zároveň môžeme automaticky zhromažďovať technické údaje (napr. IP adresa, typ prehliadača, zariadenie) za účelom zlepšenia fungovania webovej stránky.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">3. Ako používame vaše údaje</h4>
+                <p class="mb-2">Vaše osobné údaje používame na tieto účely:</p>
+                <ul class="list-disc pl-5 mb-6 space-y-1">
+                    <li>spracovanie dopytu a komunikácia</li>
+                    <li>registrácia a organizácia AI kurzov</li>
+                    <li>poskytovanie informácií o priebehu školení</li>
+                    <li>zlepšovanie našich služieb</li>
+                    <li>marketingová komunikácia (na základe súhlasu)</li>
+                </ul>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">4. Právny základ spracúvania (čl. 6 GDPR)</h4>
+                <p class="mb-2">Vaše osobné údaje spracúvame na základe nasledujúcich právnych základov:</p>
+                <ul class="list-disc pl-5 mb-6 space-y-2">
+                    <li><strong>Čl. 6 ods. 1 písm. b) GDPR</strong> – plnenie zmluvy alebo predzmluvných vzťahov (napr. keď nás kontaktujete ohľadom AI kurzu alebo sa registrujete)</li>
+                    <li><strong>Čl. 6 ods. 1 písm. f) GDPR</strong> – oprávnený záujem (napr. zlepšovanie služieb, základná komunikácia so zákazníkmi)</li>
+                    <li><strong>Čl. 6 ods. 1 písm. a) GDPR</strong> – súhlas dotknutej osoby (napr. zasielanie marketingových informácií o AI kurzoch)</li>
+                </ul>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">5. Uchovávanie údajov</h4>
+                <p class="mb-6">Osobné údaje uchovávame len po dobu nevyhnutnú na splnenie účelu, na ktorý boli získané, alebo v súlade s platnými právnymi predpismi. V prípade marketingových súhlasov uchovávame údaje do ich odvolania.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">6. Bezpečnosť údajov</h4>
+                <p class="mb-6">Prijímame primerané technické a organizačné opatrenia na ochranu vašich údajov pred neoprávneným prístupom, stratou alebo zneužitím.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">7. Vaše práva</h4>
+                <p class="mb-2">Máte právo:</p>
+                <ul class="list-disc pl-5 mb-4 space-y-1">
+                    <li>na prístup k svojim údajom a ich opravu</li>
+                    <li>na vymazanie údajov</li>
+                    <li>na obmedzenie spracúvania</li>
+                    <li>namietať spracúvanie</li>
+                    <li>kedykoľvek odvolať súhlas</li>
+                </ul>
+                <p class="mb-6">Svoje práva si môžete uplatniť prostredníctvom e-mailu: <a href="mailto:info@balanced-hr.com" class="text-bhr-red hover:underline">info@balanced-hr.com</a> alebo u zodpovednej osoby: <a href="mailto:zodpovednaosoba@balanced-hr.com" class="text-bhr-red hover:underline">zodpovednaosoba@balanced-hr.com</a>.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">8. Zdieľanie údajov s tretími stranami</h4>
+                <p class="mb-2">Vaše osobné údaje neposkytujeme tretím stranám, okrem prípadov, keď:</p>
+                <ul class="list-disc pl-5 mb-6 space-y-1">
+                    <li>je to nevyhnutné pre organizáciu AI kurzov (napr. nástroje na registráciu, mailingové systémy)</li>
+                    <li>to vyžaduje zákon</li>
+                </ul>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">9. Súbory cookie a sledovacie technológie</h4>
+                <p class="mb-2">Používame cookies na:</p>
+                <ul class="list-disc pl-5 mb-6 space-y-1">
+                    <li>zabezpečenie funkčnosti webu</li>
+                    <li>analýzu návštevnosti</li>
+                    <li>zlepšenie používateľskej skúsenosti</li>
+                </ul>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">10. Zmeny v zásadách ochrany osobných údajov</h4>
+                <p class="mb-6">Tieto zásady môžeme priebežne aktualizovať. Aktuálna verzia bude vždy zverejnená na tejto stránke.</p>
+
+                <h4 class="text-bhr-red font-bold text-lg mt-6 mb-2">11. Rozhodné právo</h4>
+                <p class="mb-6">Tieto zásady sa riadia právnymi predpismi Slovenskej republiky a legislatívou Európskej únie (najmä GDPR).</p>
             </div>
         </div>
     </footer>
@@ -684,22 +820,20 @@
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.15 // Animácia sa spustí, keď je 15% elementu viditeľných
+                threshold: 0.15
             };
 
             const scrollObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('active');
-                        observer.unobserve(entry.target); // Animujeme len raz pri scrollovaní dole
+                        observer.unobserve(entry.target);
                     }
                 });
             }, observerOptions);
 
-            // Samostatné elementy
             document.querySelectorAll('.reveal').forEach(el => scrollObserver.observe(el));
 
-            // Helper na vytvorenie "Stagger" (kaskádového) efektu pre skupiny prvkov
             const setupStagger = (containerClass, itemSelector, delayMs = 150) => {
                 const containers = document.querySelectorAll(containerClass);
                 containers.forEach(container => {
@@ -711,11 +845,10 @@
                 });
             };
 
-            // Aplikovanie stagger efektu na gridy
-            setupStagger('.stagger-grid-internal', '.reveal-item', 150); // Karty interné
-            setupStagger('.stagger-grid-open', '.reveal-item', 150); // Karty otvorené
-            setupStagger('.stagger-grid-logos', '.reveal-item', 50); // Logá (rýchlejší stagger)
-            setupStagger('.stagger-grid-quotes', '.reveal-item', 150); // Citáty
+            setupStagger('.stagger-grid-internal', '.reveal-item', 150);
+            setupStagger('.stagger-grid-open', '.reveal-item', 150);
+            setupStagger('.stagger-grid-logos', '.reveal-item', 50);
+            setupStagger('.stagger-grid-quotes', '.reveal-item', 150);
         });
 
         // --- Mobilné menu a Dark Mode ---
@@ -756,21 +889,30 @@
         setIconsBasedOnTheme();
 
         function toggleTheme() {
-            if (localStorage.getItem('color-theme')) {
-                if (localStorage.getItem('color-theme') === 'light') {
-                    document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
+            try {
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
                 } else {
-                    document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
+                    if (document.documentElement.classList.contains('dark')) {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
                 }
-            } else {
+            } catch (e) {
+                // Fallback ak je localStorage zablokovaný
                 if (document.documentElement.classList.contains('dark')) {
                     document.documentElement.classList.remove('dark');
-                    localStorage.setItem('color-theme', 'light');
                 } else {
                     document.documentElement.classList.add('dark');
-                    localStorage.setItem('color-theme', 'dark');
                 }
             }
             setIconsBasedOnTheme();
@@ -815,7 +957,7 @@
                     { time: '13:00 - 14:00', label: 'Live testovanie a Q&A' }
                 ],
                 for: 'Celý tím, od administratívy po top management.',
-                dates: ['4. jún 2026 (štvrtok), Trenčín (8:30 – 13:30)', '18. jún 2026 (štvrtok), Bratislava (8:30 – 13:30)']
+                dates: ['14. máj 2026 (štvrtok), Trenčín (8:30 – 13:30)', '2. jún 2026 (utorok), Bratislava (8:30 – 13:30)']
             },
             biznis: {
                 title: 'AI pre biznis',
@@ -829,16 +971,17 @@
                 structure: [
                     { time: '5 hodín', label: 'Audit procesov + Strategický framework + Implementačný plán' }
                 ],
-                for: 'Majitelia MSP, riaditelia a board členovia.',
-                dates: ['21. apríl 2026 (utorok), Bratislava (9:00 – 14:00)', '12. máj 2026 (utorok), Trenčín (8:30 – 13:30)']
+                for: 'Majitelia MSP, riaditelia a manažéri.',
+                dates: ['12. máj 2026 (utorok), Trenčín (8:30 – 13:30)', '4. jún 2026 (štvrtok), Bratislava (9:00 – 14:00)']
             },
             hr: {
                 title: 'AI pre efektívne HR',
                 subtitle: 'Moderný recruitment a people management',
                 gains: [
-                    'Automatizácia tvorby pútavých inzerátov',
-                    'Inteligentné filtrovanie stoviek CV za sekundy',
-                    'Zrýchlenie onboardingu a feedbacku',
+                    'Realistický pohľad na to, kde AI pomáha a kde nie',
+                    'Konkrétne HR use-cases',
+                    'Vlastné pripravené prompty a workflow',
+                    'Návrh interných pravidiel používania AI',
                     'Zlepšenie Employer Brandingu cez AI obsah'
                 ],
                 structure: [
@@ -846,20 +989,20 @@
                     { time: 'Blok 2', label: 'People management a interná komunikácia' },
                     { time: 'Blok 3', label: 'Praktický workshop s reálnymi HR dátami' }
                 ],
-                for: 'HR Manažéri, Recruitment špecialisti a HRD.',
+                for: 'HR Manažéri, Recruitment špecialisti.',
                 dates: ['19. mája 2026 (utorok), Bratislava (9:00 – 14:00)', '26. mája 2026 (utorok), Trenčín (8:30 – 13:30)']
             },
             sales: {
                 title: 'AI pre efektívny Sales',
                 subtitle: 'Akcelerácia predaja a prospecting',
                 gains: [
-                    'Generovanie personalizovaných cold e-mailov',
-                    'Automatizácia zápisov v CRM a analýza hovorov',
+                    'AI transformácia tradičných sales úloh',
+                    'Automatizácia zápisov a analýza hovorov',
                     'LinkedIn Prospecting na autopilota',
                     'Rýchla tvorba predajných argumentov'
                 ],
                 structure: [
-                    { time: '5 hodín', label: 'Lead gen moduly + CRM automatizácia + Sales Copywriting' }
+                    { time: '5 hodín', label: 'Lead gen moduly + Sales Copywriting' }
                 ],
                 for: 'Obchodní riaditelia a Sales tímy.',
                 dates: ['5. mája 2026 (utorok), Trenčín (8:30 – 13:30)', '28. mája 2026 (štvrtok), Bratislava (9:00 – 14:00)']
@@ -877,15 +1020,15 @@
                     { time: '5 hodín', label: 'Deep-dive do aplikácií MS 365 s Copilotom' }
                 ],
                 for: 'Používatelia balíka Microsoft 365.',
-                dates: ['2. jún 2026 (utorok), Bratislava (9:00 – 14:00)', '23. jún 2026 (utorok), Trenčín (8:30 – 13:30)']
+                dates: ['9. jún 2026 (utorok), Trenčín (8:30 – 13:30)', '11. jún 2026 (štvrtok), Bratislava (9:00 – 14:00)']
             },
             admin: {
                 title: 'AI kurz na mieru',
-                subtitle: 'Zamerané na špecifické use-cases pre Backoffice, Financie, Kvalitu a Údržbu',
+                subtitle: 'Zamerané na use-cases pre Backoffice, Financie, Kvalitu alebo Údržbu',
                 gains: [
                     'Spracovanie faktúr a dokumentácie bez manuálneho prepisovania',
                     'Analýza a automatizácia reportingu pre finančné oddelenie',
-                    '<strong>Kvalita:</strong> Optimalizácia kontrolných procesov a analýza chýb',
+                    'Kvalita: Optimalizácia kontrolných procesov a analýza chýb',
                     'Prediktívne plánovanie a analýza záznamov pre údržbu',
                     'Zvýšenie presnosti dát a eliminácia chýb v operatíve'
                 ],
@@ -894,51 +1037,132 @@
                     { time: 'Workshop', label: 'Implementácia AI asistentov pre konkrétne use-cases' },
                     { time: 'Výsledok', label: 'Funkčné riešenia pre agendu backoffice-u, financií a kvality' }
                 ],
-                for: 'Tímy administratívy, finančníci, kontrolóri kvality a pracovníci prevádzky.',
+                for: 'Tímy administratívy, finančníci, kvalitári a pracovníci prevádzky.',
                 dates: []
             }
         };
 
-        // --- Dáta pre Otvorené Kurzy (5 vybraných kurzov s ich najbližším termínom z databázy vyššie) ---
-        const openCourses = [
-            {
-                day: "21",
-                month: "Apr",
-                title: "AI pre biznis",
-                description: "Strategický workshop pre vedenie",
-                modalId: "biznis"
-            },
-            {
-                day: "05",
-                month: "Máj",
-                title: "AI pre efektívny Sales",
-                description: "Akcelerácia predaja a prospecting",
-                modalId: "sales"
-            },
-            {
-                day: "19",
-                month: "Máj",
-                title: "AI pre efektívne HR",
-                description: "Optimalizácia náboru a onboardingu",
-                modalId: "hr"
-            },
-            {
-                day: "02",
-                month: "Jún",
-                title: "Microsoft Copilot (MS 365)",
-                description: "Inteligentný asistent pre balík Office",
-                modalId: "copilot"
-            },
-            {
-                day: "04",
-                month: "Jún",
-                title: "Krok do sveta AI",
-                description: "Univerzálny štart pre celú firmu",
-                modalId: "krok"
-            }
+        // --- Automatické filtrovanie termínov podľa aktuálneho dátumu ---
+        const slovakMonthMap = {
+            'január': 0, 'januára': 0,
+            'február': 1, 'februára': 1,
+            'marec': 2, 'marca': 2,
+            'apríl': 3, 'apríla': 3,
+            'máj': 4, 'mája': 4,
+            'jún': 5, 'júna': 5,
+            'júl': 6, 'júla': 6,
+            'august': 7, 'augusta': 7,
+            'september': 8, 'septembra': 8,
+            'október': 9, 'októbra': 9,
+            'november': 10, 'novembra': 10,
+            'december': 11, 'decembra': 11
+        };
+        const slovakMonthDisplay = ['Január','Február','Marec','Apríl','Máj','Jún','Júl','August','September','Október','November','December'];
+
+        function parseSlovakDate(str) {
+            const m = str.match(/(\d{1,2})\.\s+(\S+)\s+(\d{4})/);
+            if (!m) return null;
+            const month = slovakMonthMap[m[2].toLowerCase()];
+            if (month === undefined) return null;
+            return new Date(parseInt(m[3], 10), month, parseInt(m[1], 10));
+        }
+
+        // Odstránenie uplynulých termínov z workshopData (ovplyvní aj rozbaľovaciu lištu v modále)
+        (function filterExpiredDates() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            Object.keys(workshopData).forEach(key => {
+                const ws = workshopData[key];
+                if (Array.isArray(ws.dates) && ws.dates.length > 0) {
+                    ws.dates = ws.dates.filter(d => {
+                        const parsed = parseSlovakDate(d);
+                        return !parsed || parsed >= today;
+                    });
+                }
+            });
+        })();
+
+        // Metadáta pre hlavný pohľad (popisky) – dátum a mesiac sa doplnia automaticky
+        const openCourseMeta = [
+            { modalId: "biznis",  description: "Strategický workshop pre vedenie" },
+            { modalId: "sales",   description: "Akcelerácia predaja a prospecting" },
+            { modalId: "hr",      description: "Optimalizácia náboru a onboardingu" },
+            { modalId: "copilot", description: "Inteligentný asistent pre balík Office" },
+            { modalId: "krok",    description: "Univerzálny štart pre celú firmu" }
         ];
 
-        // Vykreslenie kartičiek Otvorených Kurzov
+        // Dynamické vytvorenie openCourses: pre každý kurz vyberie najbližší nadchádzajúci termín
+        const openCourses = openCourseMeta.map(meta => {
+            const ws = workshopData[meta.modalId];
+            if (!ws || !Array.isArray(ws.dates) || ws.dates.length === 0) return null;
+            const parsed = ws.dates
+                .map(d => ({ str: d, date: parseSlovakDate(d) }))
+                .filter(x => x.date)
+                .sort((a, b) => a.date - b.date);
+            if (parsed.length === 0) return null;
+            const first = parsed[0].date;
+            return {
+                day: String(first.getDate()).padStart(2, '0'),
+                month: slovakMonthDisplay[first.getMonth()],
+                title: ws.title,
+                description: meta.description,
+                modalId: meta.modalId
+            };
+        }).filter(c => c !== null);
+
+        // --- Decentný pop-up s najbližším kurzom ---
+        function closeUpcomingPopup() {
+            const popup = document.getElementById('upcomingCoursePopup');
+            if (!popup) return;
+            popup.classList.add('translate-y-8', 'opacity-0', 'pointer-events-none');
+            try { sessionStorage.setItem('bhrPopupDismissed', '1'); } catch(e) {}
+        }
+
+        (function initUpcomingPopup() {
+            try {
+                if (sessionStorage.getItem('bhrPopupDismissed') === '1') return;
+            } catch(e) {}
+            if (!openCourses || openCourses.length === 0) return;
+
+            // Nájdi kurz s globálne najbližším dátumom
+            let nearest = null;
+            let nearestCourse = null;
+            openCourses.forEach(c => {
+                const ws = workshopData[c.modalId];
+                if (!ws || !ws.dates || ws.dates.length === 0) return;
+                const parsed = ws.dates
+                    .map(d => ({ str: d, date: parseSlovakDate(d) }))
+                    .filter(x => x.date)
+                    .sort((a, b) => a.date - b.date);
+                if (parsed.length === 0) return;
+                if (!nearest || parsed[0].date < nearest.date) {
+                    nearest = parsed[0];
+                    nearestCourse = c;
+                }
+            });
+            if (!nearestCourse || !nearest) return;
+
+            // Extrahuj mesto z textu (medzi "), " a " (")
+            const locMatch = nearest.str.match(/\),\s*([^(]+?)\s*\(/);
+            const location = locMatch ? locMatch[1].trim() : '';
+
+            const popup = document.getElementById('upcomingCoursePopup');
+            if (!popup) return;
+            document.getElementById('popupDay').innerText = String(nearest.date.getDate()).padStart(2, '0');
+            document.getElementById('popupMonth').innerText = slovakMonthDisplay[nearest.date.getMonth()];
+            document.getElementById('popupTitle').innerText = nearestCourse.title;
+            document.getElementById('popupLocation').innerText = (location ? location + ' • ' : '') + '299 € bez DPH';
+            document.getElementById('popupCta').onclick = function() {
+                closeUpcomingPopup();
+                openModal(nearestCourse.modalId, false);
+            };
+
+            // Zobraz po 4 sekundách jemnou animáciou
+            setTimeout(() => {
+                popup.classList.remove('translate-y-8', 'opacity-0', 'pointer-events-none');
+            }, 4000);
+        })();
+
         function renderCourses() {
             const container = document.getElementById('courses-container');
             if (!container) return;
@@ -956,7 +1180,6 @@
                             <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400 italic">${course.description}</p>
                         </div>
                     </div>
-                    <!-- Otvorené kurzy posielame do openModal bez parametru 'isInternal', tzn. ukážu sa termíny -->
                     <button onclick="openModal('${course.modalId}', false)" class="w-full md:w-auto bg-bhr-red text-white px-8 py-3 rounded-xl font-bold hover:bg-bhr-dark-red transition shrink-0 shadow-lg shadow-red-100 dark:shadow-none text-base">Vybrať termín</button>
                 </div>
             `}).join('');
@@ -964,7 +1187,6 @@
 
         renderCourses();
 
-        // Otvorenie modálu pre detaily kurzu
         function openModal(id, isInternal = false) {
             const d = workshopData[id];
             const content = `
@@ -1004,17 +1226,14 @@
             `;
             document.getElementById('modalBody').innerHTML = content;
 
-            // Dynamický Footer na základe toho, či ide o interný alebo otvorený kurz
             let footerHtml = '';
             
-            // Ak je to INTERNÝ kurz, ukážeme LEN "Mám otázku" a "Zavrieť"
             if (isInternal || !d.dates || d.dates.length === 0) {
                 footerHtml = `
                     <a href="#kontakt" onclick="closeModal()" class="w-full md:flex-[3] block bg-[#333333] dark:bg-gray-100 dark:text-[#333333] text-white px-6 py-3.5 md:py-4 rounded-xl md:rounded-2xl font-bold text-sm md:text-base text-center hover:bg-black dark:hover:bg-white transition shadow-lg shadow-gray-200 dark:shadow-none">Mám otázku</a>
                     <button onclick="closeModal()" class="w-full md:w-auto bg-transparent border-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 px-4 py-2 font-semibold text-sm transition underline underline-offset-2">Zavrieť</button>
                 `;
             } 
-            // Ak je to OTVORENÝ kurz, ukážeme rolovacie menu s termínmi a maličké zavrieť
             else {
                 const safeTitle = d.title.replace(/'/g, "\\'");
                 const datesList = d.dates.map(date => 
@@ -1047,6 +1266,14 @@
             document.body.classList.remove('modal-active');
         }
 
+        // --- Logika pre vyklápacie texty GDPR ---
+        function toggleGDPR() {
+            const gdprText = document.getElementById('gdprText');
+            const gdprIcon = document.getElementById('gdprIcon');
+            gdprText.classList.toggle('hidden');
+            gdprIcon.classList.toggle('rotate-180');
+        }
+
         // --- Logika pre Objednávkový formulár ---
         function openOrderForm(courseName, courseDate) {
             closeModal();
@@ -1065,12 +1292,26 @@
             const formMessage = document.getElementById('formMessage');
             if(formMessage) {
                 formMessage.classList.add('hidden');
-                formMessage.className = 'hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2';
+                formMessage.className = 'hidden text-center font-bold p-3 md:p-4 rounded-lg text-sm md:text-base border-2 mt-4';
+            }
+
+            // Skryť GDPR text ak bol vyklopený pri zatvorení formulára
+            const gdprText = document.getElementById('gdprText');
+            const gdprIcon = document.getElementById('gdprIcon');
+            if(gdprText && !gdprText.classList.contains('hidden')) {
+                gdprText.classList.add('hidden');
+                gdprIcon.classList.remove('rotate-180');
             }
         }
 
         // --- Logika pre EmailJS (Odosielanie formulára) ---
-        emailjs.init("04e9O4Qvgl2pnKmQ3");
+        try {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init({ publicKey: "04e9O4Qvgl2pnKmQ3" });
+            }
+        } catch (e) {
+            console.warn("EmailJS init chyba:", e);
+        }
 
         const orderForm = document.getElementById('orderForm');
         if (orderForm) {
@@ -1080,6 +1321,13 @@
                 const submitBtn = document.getElementById('submitBtn');
                 const formMessage = document.getElementById('formMessage');
                 const originalBtnText = submitBtn.innerText;
+                
+                if (typeof emailjs === 'undefined') {
+                    formMessage.innerText = "Služba pre odosielanie formulárov nie je momentálne dostupná. Skontrolujte prosím svoje pripojenie alebo si vypnite blokovanie reklám.";
+                    formMessage.classList.remove('hidden');
+                    formMessage.classList.add('border-red-500', 'text-red-100', 'bg-red-900/50');
+                    return;
+                }
                 
                 submitBtn.innerText = "ODOSIELAM...";
                 submitBtn.disabled = true;
